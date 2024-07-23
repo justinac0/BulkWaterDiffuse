@@ -1,12 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.stats import norm
-import statistics
 
 from spacial_random import SpacialRandom
-from tests import Tests
 from linmath import Math
-from plots import Plot
+from walk import Particle
 
 def test_isotropic_points(Np: int) -> list:
     points = []
@@ -67,6 +64,56 @@ def verify_plot(points):
     plt.show()
 
 if __name__ == '__main__':
-    Np = 10000
-    points = test_isotropic_points(Np)
-    verify_plot(points)
+    NT = 200 # TIME STEPS
+    NP = 1000
+    D0 = 2.3 * 10**(-3)
+    dt = 5 * 10**(-9)
+
+    PARTICLES = []
+    for i in range(0, NP):
+        PARTICLES.append(Particle((0, 0, 0)))
+
+    xs = []
+    ys = []
+    zs = []
+    points = []
+
+    for step in range(0, NT):
+        for p in PARTICLES:
+            p.walk(D0, dt)
+
+    for p in PARTICLES:
+        x, y, z = p.position
+        xs.append(x)
+        ys.append(y)
+        zs.append(z)
+        points.append((x, y, z))
+    
+    # Calculate Tensors
+    # Dxx = 1/(2*NT*dt*NP)*(SUM^NP(xi)^2)
+    # Dxy = 1/(2*NT*dt*NP)*(SUM^NP(xi*yi))
+    # Dxz = 1/(2*NT*dt*NP)*(SUM^NP(xi*zi))
+    # ...
+
+    # Diffusion Tensor
+    # DT = [
+    #   Dxx Dxy Dxz
+    #   Dxy Dyy Dyz
+    #   Dxz Dyz Dzz
+    # ]
+
+    # Diagonalize DT to get Eigen Values...
+
+    # Np = 10000
+    # points = test_isotropic_points(Np)
+    # verify_plot(points)
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    ax.scatter(xs, ys, zs, color='red', s=2, alpha=0.6)
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+
+    plt.show()
