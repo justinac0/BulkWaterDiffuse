@@ -1,4 +1,7 @@
 import numpy as np
+import math
+
+from linmath import Math 
 
 class SpacialRandom:
     def __init__(self):
@@ -17,26 +20,24 @@ class SpacialRandom:
     # therefore, radius of 1 sphere is inside said cube.
     # NOTE(justin): should each point be projected to the surface???
     @staticmethod
-    def spherical_point() -> tuple:
-        origin = (0, 0, 0)
+    def sphere_surface_point() -> tuple:
         point = SpacialRandom.cube_point(-1, 1, -1, 1, -1, 1)
-        while not SpacialRandom.is_point_in_sphere(point, 1):
+        while not SpacialRandom.is_point_in_sphere(point):
             point = SpacialRandom.cube_point(-1, 1, -1, 1, -1, 1)
 
         # NOTE(justin): project point to surface of sphere
         # 1. normalize point
-        # 2. presto
-        
-        # TODO(justin): write vector math functions in linmath...
+
         dx, dy, dz = point
-        mag = np.sqrt(dx**2 + dy**2 + dz**2)
+        mag = math.sqrt(dx**2 + dy**2 + dz**2)
         surface_projected_point = (dx / mag, dy / mag, dz / mag)
 
         return surface_projected_point
 
-    @staticmethod
-    def is_point_in_sphere(point: tuple, radius: float) -> bool:
-        # deconstruct point into components
-        dx, dy, dz = point
-        return dx**2 + dy ** 2 + dz **2 <= 1
+    def spherical_point(point) -> tuple:
+        return Math.cartesian_to_spherical(point)
 
+    @staticmethod
+    def is_point_in_sphere(point: tuple) -> bool:
+        dx, dy, dz = point
+        return dx**2 + dy** 2 + dz**2 <= 1
