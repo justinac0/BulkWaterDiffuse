@@ -21,7 +21,6 @@ class SpacialRandom:
         origin = (0, 0, 0)
         point = SpacialRandom.cube_point(-1, 1, -1, 1, -1, 1)
         while not SpacialRandom.is_point_in_sphere(point, 1):
-            print('point is outside sphere... re-generating point...')
             point = SpacialRandom.cube_point(-1, 1, -1, 1, -1, 1)
 
         # NOTE(justin): project point to surface of sphere
@@ -29,14 +28,11 @@ class SpacialRandom:
         # 2. presto
         
         # TODO(justin): write vector math functions in linmath...
-        #dx, dy, dz = point
-        #mag = np.sqrt(dx**2 + dy**2 + dz**2)
-        #surface_projected_point = (dx / mag, dy / mag, dz / mag)
+        dx, dy, dz = point
+        mag = np.sqrt(dx**2 + dy**2 + dz**2)
+        surface_projected_point = (dx / mag, dy / mag, dz / mag)
 
-        #print(f'point in sphere was generated: {dx / mag}, {dy / mag}, {dz / mag}')
-
-        return point
-        #return surface_projected_point
+        return surface_projected_point
 
     @staticmethod
     def is_point_in_sphere(point: tuple, radius: float) -> bool:
