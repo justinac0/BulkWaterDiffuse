@@ -30,27 +30,31 @@ def verify_plot(points):
         rs.append(r)
     
     # NOTE(justin): points plot
-    fig = plt.figure()
-    ax = fig.add_subplot(projection='3d')
-    ax.set(xlim=(-1, 1), ylim=(-1, 1), zlim=(-1, 1))
-    plt.figure(figsize=(5,5))
+    # NOTE(justin): very slow to generate... only generate for report
+    #fig = plt.figure()
+    #ax = fig.add_subplot(projection='3d')
+    #ax.set(xlim=(-1, 1), ylim=(-1, 1), zlim=(-1, 1))
+    #plt.figure(figsize=(5,5))
 
-    for p in points:
-        dx, dy, dz = p
-        ax.scatter(dx, dy, dz, c='blue', marker='.')
-
-    fig.savefig('points.png')
+    #for p in points:
+    #    dx, dy, dz = p
+    #    ax.scatter(dx, dy, dz, c='blue', marker='.')
+    #fig.savefig('points.png')
 
     # NOTE(justin): verification plots
+
+    plt.figure(figsize=(14,8))
     fig, axs = plt.subplots(1, 3, tight_layout=True)
-    axs[0].hist(thetas, bins=100, color='red')
-    axs[1].hist(phis, bins=100, color='green')
-    axs[2].hist([], bins=100, color='blue')
+    
+    axs[0].hist(thetas, bins=50, color='red')
+    axs[1].hist(phis, bins=50, color='green')
+    axs[2].hist(rs, bins=50, color='blue')
+
     fig.savefig('graph.png')
 
 if __name__ == '__main__':
     # Tests.translation_isotropic()
-    Np = 1000
+    Np = 1000000
     points = test_isotropic_points(Np);
     verify_plot(points)
 
