@@ -104,9 +104,8 @@ if __name__ == '__main__':
 
     # Diagonalize DT to get Eigen Values...
 
-    # Np = 10000
-    # points = test_isotropic_points(Np)
-    # verify_plot(points)
+    points = test_isotropic_points(NP)
+    verify_plot(points)
 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
