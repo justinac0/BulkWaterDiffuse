@@ -1,3 +1,10 @@
+# TODO(justin):
+#   units on graphs
+#   clean up code (restructure/refactor bad function names and plotting code)
+#   test suite
+#   generate diffusion tensor from final data
+#   Simulation class for running bulk water diffuse in triplicate
+
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -42,6 +49,7 @@ def verify_plot(points):
         ys.append(y)
         zs.append(z)
 
+    ax.set_title('Uniform Sampling Of Unit Sphere')
     ax.scatter(xs, ys, zs, color='blue', s=1, alpha=0.6)
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
@@ -52,11 +60,13 @@ def verify_plot(points):
     # # NOTE(justin): verification plots
     plt.hist(thetas, bins=30, density=True, alpha=0.6, color='red')
     theta_theory = np.linspace(0, np.pi, len(points))
+    plt.title('Theta Observed vs. Theoretical Phi')
     plt.plot(theta_theory, 0.5 * np.sin(theta_theory))
     plt.show()
 
     plt.hist(phis, bins=30, density=True, color='green')
     phi_theory = np.linspace(0, 2 * np.pi, len(points))
+    plt.title('Phi Observed vs. Theoretical Phi')
     plt.plot(phi_theory, [1 / (2 * np.pi)] * len(points))
     plt.show()
 
@@ -65,7 +75,7 @@ def verify_plot(points):
 
 if __name__ == '__main__':
     NT = 200 # TIME STEPS
-    NP = 1000
+    NP = 5000
     D0 = 2.3 * 10**(-3)
     dt = 5 * 10**(-9)
 
@@ -110,6 +120,7 @@ if __name__ == '__main__':
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
+    ax.set_title(f'Bulk Water Diffuse (Np={NP}, Nt={NT}, D0={D0}, dt={dt})')
     ax.scatter(xs, ys, zs, color='red', s=2, alpha=0.6)
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
