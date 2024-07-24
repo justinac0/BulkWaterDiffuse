@@ -7,6 +7,7 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
+import math
 
 from spacial_random import SpacialRandom
 from linmath import Math
@@ -30,7 +31,6 @@ def verify_plot(points):
 
     for p in points:
         theta, phi, r = p
-        print(p)
         thetas.append(theta)
         phis.append(phi)
         rs.append(r)
@@ -73,9 +73,19 @@ def verify_plot(points):
     plt.plot(rs, color='blue')
     plt.show()
 
+def fractional_anisotropy(D1, D2, D3):
+    Dav = (D1 + D2 + D3) / 3
+    numerator = (D1 - Dav)**2 + (D2 - Dav)**2 + (D3 - Dav)**2 
+    denumerator = D1**2 + D2**2 + D3**2
+
+    FA = math.sqrt(3/2)*math.sqrt(numerator / denumerator)
+
+    return FA
+
 if __name__ == '__main__':
-    NT = 200 # TIME STEPS
-    NP = 5000
+    NT = 200
+    NP = 10000
+
     D0 = 2.3 * 10**(-3)
     dt = 5 * 10**(-9)
 
@@ -98,32 +108,55 @@ if __name__ == '__main__':
         ys.append(y)
         zs.append(z)
         points.append((x, y, z))
-    
+
     # Calculate Tensors
-    # Dxx = 1/(2*NT*dt*NP)*(SUM^NP(xi)^2)
-    # Dxy = 1/(2*NT*dt*NP)*(SUM^NP(xi*yi))
-    # Dxz = 1/(2*NT*dt*NP)*(SUM^NP(xi*zi))
-    # ...
+    Dxx = 0
+    Dxy = 0
+    Dxz = 0
+    Dyy = 0
+    Dyz = 0
+    Dzz = 0
+
+    for p in PARTICLES:
+        xi, yi, zi = p.position
+        Dxx += xi * xi
+        Dxy += xi * yi
+        Dxz += xi * zi
+        Dyy += yi * yi
+        Dyz += yi * zi
+        Dzz += zi * zi
+
+    Dxx *= 1/(2*NT*dt*NP)
+    Dxy *= 1/(2*NT*dt*NP)
+    Dxz *= 1/(2*NT*dt*NP)
+    Dyy *= 1/(2*NT*dt*NP)
+    Dyz *= 1/(2*NT*dt*NP)
+    Dzz *= 1/(2*NT*dt*NP)
 
     # Diffusion Tensor
-    # DT = [
-    #   Dxx Dxy Dxz
-    #   Dxy Dyy Dyz
-    #   Dxz Dyz Dzz
-    # ]
+    DT = [
+      (Dxx, Dxy, Dxz),
+      (Dxy, Dyy, Dyz),
+      (Dxz, Dyz, Dzz)
+    ]
+
+    DTeigens = [Dxx, Dyy, Dzz]
+
+    print(DTeigens)
+    print(fractional_anisotropy(Dxx, Dyy, Dzz))
 
     # Diagonalize DT to get Eigen Values...
 
-    points = test_isotropic_points(NP)
-    verify_plot(points)
+    # points = test_isotropic_points(NP)
+    # verify_plot(points)
 
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
+    # fig = plt.figure()
+    # ax = fig.add_subplot(111, projection='3d')
 
-    ax.set_title(f'Bulk Water Diffuse (Np={NP}, Nt={NT}, D0={D0}, dt={dt})')
-    ax.scatter(xs, ys, zs, color='red', s=2, alpha=0.6)
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('Z')
+    # ax.set_title(f'Bulk Water Diffuse (Np={NP}, Nt={NT}, D0={D0}, dt={dt})')
+    # ax.scatter(xs, ys, zs, color='red', s=2, alpha=0.6)
+    # ax.set_xlabel('X')
+    # ax.set_ylabel('Y')
+    # ax.set_zlabel('Z')
 
     plt.show()
