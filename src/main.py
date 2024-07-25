@@ -1,16 +1,10 @@
 # TODO(justin):
 #   units on graphs
-#   clean up code (restructure/refactor bad function names and plotting code)
 #   test suite
-#   generate diffusion tensor from final data
 #   Simulation class for running bulk water diffuse in triplicate
 
-# import matplotlib.pyplot as plt
-# import numpy as np
-# import math
-
 from sim_math import SimMath
-from walk import Particle
+from particle import Particle
 from simulation import Simulation
 
 if __name__ == '__main__':
