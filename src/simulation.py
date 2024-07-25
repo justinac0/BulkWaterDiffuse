@@ -64,9 +64,9 @@ class Simulation:
         FA = SimMath.calculate_fractional_anisotropy(Dxx, Dyy, Dzz)
 
         return SimulationData(particles, DT, eigens, FA)
-    
+
     @staticmethod
-    def static_run(NT, NP, D0, dt):
+    def static_run(NT, NP, D0, dt) -> str:
         simulation = Simulation(NT, NP, D0, dt)
         _, diffusion_tensor, eigen_diffusion_tensor, fa = simulation.run().get()
-        print(f'Simulation Details:\nNT: {NT}\nNP: {NP}\nD0: {D0}\ndt: {dt}\n\nDiffusion Tensor:\n{diffusion_tensor}\n\nDiffusion Tensor Eigen Values:\n{eigen_diffusion_tensor}\n\nFractional Anisotropy:\n{fa}')
+        return (f'Simulation Details:\nNT: {NT}\nNP: {NP}\nD0: {D0}\ndt: {dt}\n\nDiffusion Tensor:\n{diffusion_tensor}\n\nDiffusion Tensor Eigen Values:\n{eigen_diffusion_tensor}\n\nFractional Anisotropy:\n{fa}\n')
