@@ -9,7 +9,7 @@ class SimulationData:
         self.diffusion_tensor       = diffusion_tensor
         self.eigen_diffusion_tensor = eigen_diffusion_tensor
         self.fractional_anisotropy  = fractional_anisotropy
-    
+
     # particles, DT, eigen, FA
     def get(self):
         return (self.particles, self.diffusion_tensor, self.eigen_diffusion_tensor, self.fractional_anisotropy)
@@ -21,29 +21,19 @@ class Simulation:
         self.D0 = D0
         self.dt = dt
         self.simulation_data = None
-        self.particles = []
 
     def run(self) -> SimulationData:
+        # initialize particles at origin
+        particles = []
         for i in range(0, self.Np):
-            self.particles.append(Particle((0, 0, 0)))
+            particles.append(Particle((0, 0, 0)))
 
-        xs = []
-        ys = []
-        zs = []
-        points = []
-
+        # run random walk
         for step in range(0, self.Nt):
-            for p in self.particles:
+            for p in particles:
                 p.walk(self.D0, self.dt)
 
-        for p in self.particles:
-            x, y, z = p.position
-            xs.append(x)
-            ys.append(y)
-            zs.append(z)
-            points.append((x, y, z))
-
-        # Calculate Tensors
+        # Calculate Diffusion Tensors
         Dxx = 0
         Dxy = 0
         Dxz = 0
@@ -51,7 +41,7 @@ class Simulation:
         Dyz = 0
         Dzz = 0
 
-        for p in self.particles:
+        for p in particles:
             xi, yi, zi = p.position
             Dxx += xi * xi
             Dxy += xi * yi
@@ -60,21 +50,23 @@ class Simulation:
             Dyz += yi * zi
             Dzz += zi * zi
 
-        Dxx *= 1 / (2 * self.Nt * self.dt * self.Np)
-        Dxy *= 1 / (2 * self.Nt * self.dt * self.Np)
-        Dxz *= 1 / (2 * self.Nt * self.dt * self.Np)
-        Dyy *= 1 / (2 * self.Nt * self.dt * self.Np)
-        Dyz *= 1 / (2 * self.Nt * self.dt * self.Np)
-        Dzz *= 1 / (2 * self.Nt * self.dt * self.Np)
-
-        # Diffusion Tensor
-        DT = [
+        coefactor = (1 / (2 * self.Nt * self.dt * self.Np))
+        DT = np.array([
             [Dxx, Dxy, Dxz],
             [Dxy, Dyy, Dyz],
             [Dxz, Dyz, Dzz]
-        ]
+        ]) * coefactor
 
-        eigens = [Dxx, Dyy, Dzz]
+        # retrieve eigen values of diffusion tensor
+        eigens = np.diag(DT)
+
+        # calculate fractional anisotropy of eigen values
         FA = SimMath.calculate_fractional_anisotropy(Dxx, Dyy, Dzz)
 
-        return SimulationData(self.particles, DT, eigens, FA)
+        return SimulationData(particles, DT, eigens, FA)
+    
+    @staticmethod
+    def static_run(NT, NP, D0, dt):
+        simulation = Simulation(NT, NP, D0, dt)
+        _, diffusion_tensor, eigen_diffusion_tensor, fa = simulation.run().get()
+        print(f'Simulation Details:\nNT: {NT}\nNP: {NP}\nD0: {D0}\ndt: {dt}\n\nDiffusion Tensor:\n{diffusion_tensor}\n\nDiffusion Tensor Eigen Values:\n{eigen_diffusion_tensor}\n\nFractional Anisotropy:\n{fa}')

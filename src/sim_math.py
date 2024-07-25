@@ -11,7 +11,7 @@ class SimMath:
         if phi < 0:
             phi += 2 * np.pi
 
-        return (theta, phi, r)
+        return (r, theta, phi)
 
     @staticmethod
     def spherical_to_cartesian(spherical: tuple) -> tuple:
@@ -42,7 +42,6 @@ class SimMath:
 
         # NOTE(justin): project point to surface of sphere
         # 1. normalize point
-
         dx, dy, dz = point
         mag = np.sqrt(dx**2 + dy**2 + dz**2)
         surface_projected_point = (dx / mag, dy / mag, dz / mag)
