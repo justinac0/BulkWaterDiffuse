@@ -58,7 +58,7 @@ class SimMath:
         return dx**2 + dy** 2 + dz**2 <= 1
 
     @staticmethod
-    def fractional_anisotropy(D1, D2, D3):
+    def calculate_fractional_anisotropy(D1, D2, D3):
         Dav = (D1 + D2 + D3) / 3
         numerator = (D1 - Dav)**2 + (D2 - Dav)**2 + (D3 - Dav)**2 
         denumerator = D1**2 + D2**2 + D3**2
@@ -66,3 +66,12 @@ class SimMath:
         FA = np.sqrt(3/2) * np.sqrt(numerator / denumerator)
 
         return FA
+    
+    @staticmethod
+    def calculate_displacement(D, dt, point) -> tuple:
+        # TODO(justin): vector functions
+        dr = np.sqrt(6 * D * dt)
+        dx, dy, dz = point
+
+        return (dr * dx, dr * dy, dr * dz)
+
