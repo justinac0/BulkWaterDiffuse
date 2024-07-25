@@ -29,7 +29,7 @@ class Simulation:
             particles.append(Particle((0, 0, 0)))
 
         # run random walk
-        for step in range(0, self.Nt):
+        for _ in range(0, self.Nt):
             for p in particles:
                 p.walk(self.D0, self.dt)
 

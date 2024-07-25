@@ -2,6 +2,7 @@
 #   graphing...
 
 import time
+
 from playsound3 import playsound
 
 from simulation import Simulation
@@ -14,31 +15,25 @@ def simulation_worker(i, NT, NP, D0, dt) -> tuple:
     contents = (f'{NP}> Simulation Index: {i+1}\n')
 
     start = time.time()
+
     simulation = Simulation(NT, NP, D0, dt)
     simulation_data = simulation.run().get()
-
     _, diffusion_tensor, eigen_diffusion_tensor, fa = simulation_data
 
-    contents += (f'''Simulation Details:\nNT: {NT}\n
-                    NP: {NP}\nD0: {D0}\n
-                    dt: {dt}\n\n
-                    Diffusion Tensor:\n{diffusion_tensor}\n\n
-                    Diffusion Tensor Eigen Values:\n{eigen_diffusion_tensor}\n\n
-                    Fractional Anisotropy:\n{fa}\n''')
+    contents += (f'Simulation Details:\nNT: {NT}\nNP: {NP}\nD0: {D0}\ndt: {dt}\n\nDiffusion Tensor:\n{diffusion_tensor}\n\nDiffusion Tensor Eigen Values:\n{eigen_diffusion_tensor}\n\nFractional Anisotropy:\n{fa}\n')
 
-    contents += (Simulation.static_run(NT, NP, D0, dt))
     end = time.time()
 
-    elapsed = (f'time_elapsed: {end - start} seconds')
-    print(f'FINISHED: {i}, {NT}, {NP}, {elapsed}')
-    contents += elapsed
+    elapsed = f'{(end - start):.2f}'
+    print(f'simulation_worker> [completed]: {i}, {NT}, {NP}, elapsed = {elapsed} seconds')
+    contents += f'\n\nelapsed_time: {elapsed} seconds'
 
     return (simulation_data, FileData(file_path, contents))
 
-def run_parallel(NT: int, NP: list[int], D0: float, dt: float, repeats=1):
+def run_parallel(NT: int, NP: list[int], D0: float, dt: float, repeats=3) -> list:
     data = []
 
-    with concurrent.futures.ProcessPoolExecutor(max_workers=4) as executor:
+    with concurrent.futures.ProcessPoolExecutor() as executor:
         futures = []
 
         for particle_count in NP:
@@ -53,26 +48,28 @@ def run_parallel(NT: int, NP: list[int], D0: float, dt: float, repeats=1):
 
     return data
 
-def simulate_on_multiple_cores(NT, NP, D0, dt):
+def simulate_on_multiple_cores(NT, NP, D0, dt) -> list:
     start = time.time()
-    run_parallel(NT, NP, D0, dt)
+    data = run_parallel(NT, NP, D0, dt)
     end = time.time()
 
     file = open(f'resources/data/time_elapsed.txt', 'w')
     file.write(f'time_elapsed: {end - start} seconds')
     file.close()
 
-    playsound('resources/audio/water_drop_reverb.wav')
+    playsound('resources/audio/water_drop_reverb.mp3')
+
+    return data
 
 if __name__ == '__main__':
     NT = 300            # steps
     D0 = 2.3 * 10**(-3) # diffusion coefficient
     dt = 5 * 10**(-9)   # time step
 
-    NP = [10, 30, 100, 300, 1000, 3000, 10000, 30000]
+    NP = [10, 30, 100, 300, 1000, 3000, 10000, 30000, 81910]
 
-    _, files = simulate_on_multiple_cores(NT, NP, D0, dt)
+    data = simulate_on_multiple_cores(NT, NP, D0, dt)
 
-    for file in files:
+    for _, file in data:
         with open(file.file_path, 'w') as stream:
             stream.write(file.contents)
