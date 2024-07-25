@@ -3,6 +3,9 @@
 #   test suite
 #   Simulation class for running bulk water diffuse in triplicate
 
+import time
+from playsound3 import playsound
+
 from sim_math import SimMath
 from particle import Particle
 from simulation import Simulation
@@ -13,10 +16,15 @@ if __name__ == '__main__':
     D0 = 2.3 * 10**(-3) # diffusion coefficient
     dt = 5 * 10**(-9)   # time step
 
-    NP = [10, 30, 100, 300] # 1000, 3000, 10000, 30000
+    NP = [10, 30, 100, 300, 1000, 3000, 10000, 30000]
     for particle_count in NP:
         for i in range(0, 3): # running in triplicate
             print(f'{particle_count}> Simulation Index: {i+1}')
+            start = time.time()
             Simulation.static_run(particle_count, particle_count, D0, dt)
+            end = time.time()
+            print(f'time_elapsed: {end - start} seconds\n----------------------------------------------\n')
+
+    playsound('resources/audio/water_drop_reverb.wav')
 
     # file_io.write_csv('test.csv', [])
