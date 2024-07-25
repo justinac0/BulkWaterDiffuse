@@ -9,82 +9,72 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 
-from spacial_random import SpacialRandom
-from linmath import Math
+from simmath import SimMath
 from walk import Particle
 
-def test_isotropic_points(Np: int) -> list:
-    points = []
+# def test_isotropic_points(Np: int) -> list:
+#     points = []
 
     # generate Np random points in sphere
-    for _ in range(0, Np):
-        point = SpacialRandom.sphere_surface_point()
-        points.append(SpacialRandom.spherical_point(point))
+    # for _ in range(0, Np):
+    #     point = SimMath.sphere_surface_point()
+    #     points.append(SimMath.spherical_point(point))
 
-    return points
+    # return points
 
-def verify_plot(points):
-    thetas = []
-    phis = []
-    rs = []
-    cpoints = []
+# def verify_plot(points):
+#     thetas = []
+#     phis = []
+#     rs = []
+#     cpoints = []
 
-    for p in points:
-        theta, phi, r = p
-        thetas.append(theta)
-        phis.append(phi)
-        rs.append(r)
-        cpoints.append(Math.spherical_to_cartesian(p))
+#     for p in points:
+#         theta, phi, r = p
+#         thetas.append(theta)
+#         phis.append(phi)
+#         rs.append(r)
+#         cpoints.append(SimMath.spherical_to_cartesian(p))
 
     # NOTE(justin): points plot
     # NOTE(justin): very slow to generate... only generate for report
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
+    # fig = plt.figure()
+    # ax = fig.add_subplot(111, projection='3d')
 
-    xs = []
-    ys = []
-    zs = []
-    for x, y, z in cpoints:
-        xs.append(x)
-        ys.append(y)
-        zs.append(z)
+    # xs = []
+    # ys = []
+    # zs = []
+    # for x, y, z in cpoints:
+    #     xs.append(x)
+    #     ys.append(y)
+    #     zs.append(z)
 
-    ax.set_title('Uniform Sampling Of Unit Sphere')
-    ax.scatter(xs, ys, zs, color='blue', s=1, alpha=0.6)
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('Z')
+    # ax.set_title('Uniform Sampling Of Unit Sphere')
+    # ax.scatter(xs, ys, zs, color='blue', s=1, alpha=0.6)
+    # ax.set_xlabel('X')
+    # ax.set_ylabel('Y')
+    # ax.set_zlabel('Z')
 
-    plt.show()
+    # plt.show()
 
     # # NOTE(justin): verification plots
-    plt.hist(thetas, bins=30, density=True, alpha=0.6, color='red')
-    theta_theory = np.linspace(0, np.pi, len(points))
-    plt.title('Theta Observed vs. Theoretical Phi')
-    plt.plot(theta_theory, 0.5 * np.sin(theta_theory))
-    plt.show()
+    # plt.hist(thetas, bins=30, density=True, alpha=0.6, color='red')
+    # theta_theory = np.linspace(0, np.pi, len(points))
+    # plt.title('Theta Observed vs. Theoretical Phi')
+    # plt.plot(theta_theory, 0.5 * np.sin(theta_theory))
+    # plt.show()
 
-    plt.hist(phis, bins=30, density=True, color='green')
-    phi_theory = np.linspace(0, 2 * np.pi, len(points))
-    plt.title('Phi Observed vs. Theoretical Phi')
-    plt.plot(phi_theory, [1 / (2 * np.pi)] * len(points))
-    plt.show()
+    # plt.hist(phis, bins=30, density=True, color='green')
+    # phi_theory = np.linspace(0, 2 * np.pi, len(points))
+    # plt.title('Phi Observed vs. Theoretical Phi')
+    # plt.plot(phi_theory, [1 / (2 * np.pi)] * len(points))
+    # plt.show()
 
-    plt.plot(rs, color='blue')
-    plt.show()
-
-def fractional_anisotropy(D1, D2, D3):
-    Dav = (D1 + D2 + D3) / 3
-    numerator = (D1 - Dav)**2 + (D2 - Dav)**2 + (D3 - Dav)**2 
-    denumerator = D1**2 + D2**2 + D3**2
-
-    FA = math.sqrt(3/2)*math.sqrt(numerator / denumerator)
-
-    return FA
+    # plt.plot(rs, color='blue')
+    # plt.show()
 
 if __name__ == '__main__':
     NT = 200
-    NP = 10000
+    NP = 100
 
     D0 = 2.3 * 10**(-3)
     dt = 5 * 10**(-9)
@@ -143,7 +133,7 @@ if __name__ == '__main__':
     DTeigens = [Dxx, Dyy, Dzz]
 
     print(DTeigens)
-    print(fractional_anisotropy(Dxx, Dyy, Dzz))
+    print(SimMath.fractional_anisotropy(Dxx, Dyy, Dzz))
 
     # Diagonalize DT to get Eigen Values...
 
@@ -159,4 +149,4 @@ if __name__ == '__main__':
     # ax.set_ylabel('Y')
     # ax.set_zlabel('Z')
 
-    plt.show()
+    # plt.show()
