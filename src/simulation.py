@@ -4,9 +4,8 @@ from sim_math import SimMath
 from particle import Particle
 
 class SimulationData:
-    def __init__(self, index: int, particle_count: int, particles: list[Particle], diffusion_tensor: list[list[float]], eigen_diffusion_tensor: list[float], fractional_anisotropy: float):
+    def __init__(self, index: int, particles: list[Particle], diffusion_tensor: list[list[float]], eigen_diffusion_tensor: list[float], fractional_anisotropy: float):
         self.index                  = index
-        self.particle_count         = particle_count
         self.particles              = particles
         self.diffusion_tensor       = diffusion_tensor
         self.eigen_diffusion_tensor = eigen_diffusion_tensor
@@ -14,7 +13,7 @@ class SimulationData:
 
     # particles, DT, eigen, FA
     def get(self):
-        return (self.index, self.particle_count, self.particles, self.diffusion_tensor, self.eigen_diffusion_tensor, self.fractional_anisotropy)
+        return (self.index, self.particles, self.diffusion_tensor, self.eigen_diffusion_tensor, self.fractional_anisotropy)
 
 class Simulation:
     def __init__(self, Nt, Np, D0, dt):
@@ -66,4 +65,4 @@ class Simulation:
         # calculate fractional anisotropy of eigen values
         FA = SimMath.calculate_fractional_anisotropy(Dxx, Dyy, Dzz)
 
-        return SimulationData(index, particle_count, particles, DT, eigens, FA)
+        return SimulationData(index, particles, DT, eigens, FA)
