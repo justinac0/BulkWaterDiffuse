@@ -6,7 +6,7 @@ class Particle:
 
     # random walk in unbiased direction
     def walk(self, D, dt):
-        rw_direction = SimMath.sphere_surface_point()
+        rw_direction = SimMath.projected_surface_spherical_point()
         x, y, z = SimMath.calculate_displacement(D, dt, rw_direction)
 
         px, py, pz = self.position
