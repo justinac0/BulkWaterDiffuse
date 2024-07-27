@@ -1,18 +1,20 @@
 10000> Simulation Index: 1
 Simulation Details:
 NT: 300
-NP: {NP}
-D0: {D0}
-dt: {dt}
+NP: 10000
+D0: 0.0023
+dt: 5e-09
 
 Diffusion Tensor:
-{diffusion_tensor}
+[[2.25090169e-03 2.05761092e-05 1.58573655e-05]
+ [2.05761092e-05 2.34342843e-03 4.84293711e-05]
+ [1.58573655e-05 4.84293711e-05 2.34593791e-03]]
 
 Diffusion Tensor Eigen Values:
-{eigen_diffusion_tensor}
+[0.0022509  0.00234343 0.00234594]
 
 Fractional Anisotropy:
-{fa}
+0.023406622231122172
 
 
-elapsed_time: 50.89 seconds
+elapsed_time: 50.88 seconds
