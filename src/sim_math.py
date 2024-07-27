@@ -82,3 +82,7 @@ class SimMath:
             points.append(cartesian)
 
         return points
+
+    @staticmethod
+    def is_in_collagen_network() -> bool:
+        return False

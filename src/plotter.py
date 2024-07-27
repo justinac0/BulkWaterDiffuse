@@ -30,8 +30,9 @@ class Plotter:
         ax.set_xlabel('y')
         ax.set_xlabel('z')
 
-        plt.show()
-    
+        plt.savefig(f'results/graphs/uniform_sampling.png')
+        # plt.show()
+
     @staticmethod
     def verify_any_bias(random_samples: list):
         thetas = []
@@ -68,4 +69,66 @@ class Plotter:
         # ax[1, 0].plot(r_theory, len(random_samples), color='black')
         ax[1, 0].set_title('Observed r vs. Theoretical r (INCORRECT)')
 
-        plt.show()
+        plt.savefig(f'results/graphs/verify_any_bias.png')
+        # plt.show()
+
+    @staticmethod
+    def fa(plotting_format):
+        keys = plotting_format.keys()
+
+        _ = plt.figure()
+        plt.title('Fractional Anisotropy')
+        plt.xlabel('Particle Count')
+        plt.ylabel('Fractional Anisotropy')
+        for key in keys:
+            for data in plotting_format[key]:
+                index, particles, diffusion_tensor, eigen_diffusion_tensor, fa = data
+                plt.scatter(len(particles), fa, c='blue')
+
+        plt.savefig(f'results/graphs/fa.png')
+        # plt.show()
+
+    @staticmethod
+    def eigens(plotting_format):
+        keys = plotting_format.keys()
+
+        fig = plt.figure()
+        plt.title('Eigens')
+        plt.xlabel('a')
+        plt.ylabel('b')
+        for key in keys:
+            for data in plotting_format[key]:
+                _, _, _, eigen_diffusion_tensor, _ = data
+                plt.scatter([key] * len(eigen_diffusion_tensor), eigen_diffusion_tensor, c='blue')
+
+        plt.savefig(f'results/graphs/eigens.png')
+        # plt.show()
+    
+    @staticmethod
+    def diffusion(plotting_format):
+        keys = plotting_format.keys()
+
+        for key in keys:
+            for data in plotting_format[key]:
+                index, particles, _, _, _ = data
+
+                fig = plt.figure()
+                ax = fig.add_subplot(111, projection='3d')
+                ax.set_aspect('equal', 'box')
+                ax.set_title(f'Bulk Water Diffusion (run={index}, NP={key})')
+                ax.set_xlabel('x')
+                ax.set_ylabel('y')
+                ax.set_zlabel('z')
+
+                xs = []
+                ys = []
+                zs = []
+                for p in particles:
+                    x, y, z = p.get_cartesian_position()
+                    xs.append(x)
+                    ys.append(y)
+                    zs.append(z)
+
+                ax.scatter(xs, ys, zs, s=1, alpha=0.5, c='blue')
+                plt.savefig(f'results/graphs/diffusion_{index}_{key}.png')
+                # plt.show()

@@ -24,7 +24,7 @@ class Simulation:
         self.simulation_data = None
 
     # negative index or particle count just means that this data isn't tracked
-    def run(self, index=-1, particle_count=-1) -> SimulationData:
+    def run(self, index=-1) -> SimulationData:
         # initialize particles at origin
         particles = []
         for i in range(0, self.Np):
