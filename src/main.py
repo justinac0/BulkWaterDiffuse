@@ -48,9 +48,6 @@ def run_parallel(NT: int, NP: list[int], D0: float, dt: float, repeats: int) -> 
 
     return data
 
-def plot_results():
-    pass
-
 def simulate_on_multiple_cores(NT: int, NP: list[int], D0: float, dt: float, repeats=3) -> list:
     start = time.time()
     data = run_parallel(NT, NP, D0, dt, repeats)
@@ -88,7 +85,7 @@ if __name__ == '__main__':
     D0 = 2.3 * 10**(-3) # diffusion coefficient
     dt = 5 * 10**(-9)   # time step
 
-    NP = [10, 30, 100, 300, 1000, 3000, 10000, 30000]
+    NP = [10, 30, 100, 300]#, 1000, 3000, 10000, 30000]
 
     # TODO(justin): simulation related functions should be in their own module...
     simulation = simulate_on_multiple_cores(NT, NP, D0, dt, repeats=3)
