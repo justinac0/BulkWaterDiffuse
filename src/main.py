@@ -1,3 +1,5 @@
+# TODO(justin): restructure namespacing to be more like python...
+
 import time
 import concurrent.futures
 
@@ -85,7 +87,7 @@ if __name__ == '__main__':
     D0 = 2.3 * 10**(-3) # diffusion coefficient
     dt = 5 * 10**(-9)   # time step
 
-    NP = [10, 30, 100, 300]#, 1000, 3000, 10000, 30000]
+    NP = [10, 30, 100, 3000, 1000, 3000, 10000, 30000]
 
     # TODO(justin): simulation related functions should be in their own module...
     simulation = simulate_on_multiple_cores(NT, NP, D0, dt, repeats=3)
@@ -94,7 +96,6 @@ if __name__ == '__main__':
 
     # TODO(justin): If time permits; rework simulation plotting format...
     plotting_format = simulation_as_plotting_format(simulation)
-    print(plotting_format.keys())
 
     plt.style.use('seaborn-v0_8-muted')
     random_samples = SimMath.generate_uniform_points(10000)
