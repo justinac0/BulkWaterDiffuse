@@ -88,7 +88,7 @@ class SimMath:
         return False
     
     @staticmethod
-    def sqrtspace(min, max, N):
+    def equidistant_np_space(min, max, N):
         # transform max and min into 1/sqrt(N) space
         linMin = np.power(min, -0.5)
         linMax = np.power(max, -0.5)

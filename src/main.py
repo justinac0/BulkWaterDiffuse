@@ -7,34 +7,22 @@ import concurrent.futures
 
 from playsound3 import playsound
 
-import math
-import numpy as np
 import matplotlib.pyplot as plt
 
 from sim_math import SimMath
 from plotter import Plotter
-from simulation import Simulation
-from file_data import FileData
+from simulation import Simulation, SimulationData
 
-def simulation_worker(i: int, NT: int, NP: int, D0: float, dt: float) -> tuple:
-    file_path = f'results/data/{i}_bulk_water_{NT}_{NP}.txt'
-    contents = (f'{NP}> Simulation Index: {i+1}\n')
-
+def simulation_worker(i: int, NT: int, NP: int, D0: float, dt: float) -> SimulationData:
     start = time.time()
-
     simulation = Simulation(NT, NP, D0, dt)
-    simulation_data = simulation.run(i).get()
-    _, _, diffusion_tensor, eigen_diffusion_tensor, fa = simulation_data
-
-    contents += (f'Simulation Details:\nNT: {NT}\nNP: {NP}\nD0: {D0}\ndt: {dt}\n\nDiffusion Tensor:\n{diffusion_tensor}\n\nDiffusion Tensor Eigen Values:\n{eigen_diffusion_tensor}\n\nFractional Anisotropy:\n{fa}\n')
-
+    data = simulation.run(i).get()
     end = time.time()
 
     elapsed = f'{(end - start):.2f}'
     print(f'simulation_worker> [completed]: {i}, {NT}, {NP}, elapsed = {elapsed} seconds')
-    contents += f'\n\nelapsed_time: {elapsed} seconds'
 
-    return (simulation_data, FileData(file_path, contents))
+    return data
 
 def run_parallel(NT: int, NP: list[int], D0: float, dt: float, repeats: int) -> list:
     data = []
@@ -65,16 +53,11 @@ def simulate_on_multiple_cores(NT: int, NP: list[int], D0: float, dt: float, rep
 
     return data
 
-def save_simulation_logs(simulation):
-    for _, file in simulation:
-        with open(file.file_path, 'w') as stream:
-            stream.write(file.contents)
-
-def simulation_as_plotting_format(simulation):
+def simulation_as_plotting_format(simulations: list):
     plotting_format = {}
 
-    for data, _ in simulation:
-        index, particles, diffusion_tensor, eigen_diffusion_tensor, fa = data
+    for simulation in simulations:
+        index, particles, diffusion_tensor, eigen_diffusion_tensor, fa = simulation
 
         key = len(particles)
         payload = (index, particles, diffusion_tensor, eigen_diffusion_tensor, fa)
@@ -87,15 +70,14 @@ def simulation_as_plotting_format(simulation):
     return plotting_format
 
 if __name__ == '__main__':
-    NT = 300            # steps
-    D0 = 2.3 * 10**(-3) # diffusion coefficient
-    dt = 5 * 10**(-9)   # time step
+    NT = 300          # steps
+    D0 = 2.3*10**(-3) # diffusion coefficient
+    dt = 5*10**(-9)   # time step
 
-    NP = SimMath.sqrtspace(10, 10000, 300)
+    NP = SimMath.equidistant_np_space(10, 10000, 5)
 
     # TODO(justin): simulation related functions should be in their own module...
     simulation = simulate_on_multiple_cores(NT, NP, D0, dt, repeats=3)
-    # save_simulation_logs(simulation)
     # playsound('resources/audio/water_drop_reverb.mp3')
 
     # TODO(justin): If time permits; rework simulation plotting format...
@@ -104,6 +86,6 @@ if __name__ == '__main__':
     plt.style.use('seaborn-v0_8-muted')
     # Plotter.uniform_sampling(plotting_format)
     Plotter.verify_any_bias(plotting_format, D0, NT, dt)
-    Plotter.fa(plotting_format)
+    # Plotter.fa(plotting_format)
     # Plotter.eigens(plotting_format)
     # Plotter.diffusion(plotting_format)
