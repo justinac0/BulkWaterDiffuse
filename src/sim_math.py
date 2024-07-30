@@ -86,3 +86,15 @@ class SimMath:
     @staticmethod
     def is_in_collagen_network() -> bool:
         return False
+    
+    @staticmethod
+    def sqrtspace(min, max, N):
+        # transform max and min into 1/sqrt(N) space
+        linMin = np.power(min, -0.5)
+        linMax = np.power(max, -0.5)
+
+        # get equidistant points
+        space = np.linspace(linMin, linMax, N)
+
+        # transform back to N space
+        return np.power(space, -2).astype(int)

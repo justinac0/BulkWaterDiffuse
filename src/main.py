@@ -1,10 +1,13 @@
-# TODO(justin): restructure namespacing to be more like python...
+# TODO(justin): rework how we gather info for repeated tests...
+# TODO(justin): create individual graphs for runs then one graph with all data on it....
 
 import time
 import concurrent.futures
 
 from playsound3 import playsound
 
+import math
+import numpy as np
 import matplotlib.pyplot as plt
 
 from sim_math import SimMath
@@ -87,20 +90,19 @@ if __name__ == '__main__':
     D0 = 2.3 * 10**(-3) # diffusion coefficient
     dt = 5 * 10**(-9)   # time step
 
-    NP = [10, 30, 100, 3000, 1000, 3000, 10000, 30000]
+    NP = SimMath.sqrtspace(10, 1000, 50)
 
     # TODO(justin): simulation related functions should be in their own module...
     simulation = simulate_on_multiple_cores(NT, NP, D0, dt, repeats=3)
-    save_simulation_logs(simulation)
-    playsound('resources/audio/water_drop_reverb.mp3')
+    # save_simulation_logs(simulation)
+    # playsound('resources/audio/water_drop_reverb.mp3')
 
     # TODO(justin): If time permits; rework simulation plotting format...
     plotting_format = simulation_as_plotting_format(simulation)
 
     plt.style.use('seaborn-v0_8-muted')
-    random_samples = SimMath.generate_uniform_points(10000)
-    Plotter.uniform_sampling(random_samples)
-    Plotter.verify_any_bias(random_samples)
+    Plotter.uniform_sampling(plotting_format)
+    Plotter.verify_any_bias(plotting_format, D0, NT, dt)
     Plotter.fa(plotting_format)
-    Plotter.eigens(plotting_format)
-    Plotter.diffusion(plotting_format)
+    # Plotter.eigens(plotting_format)
+    # Plotter.diffusion(plotting_format)
