@@ -1,5 +1,6 @@
-# TODO(justin): rework how we gather info for repeated tests...
+# TODO(justin): rework how we gather info for repeated tests... all test data needs to be placed in toml on simulation completion
 # TODO(justin): create individual graphs for runs then one graph with all data on it....
+# TODO(justin): make everything that touches math be numpy please :D
 
 import time
 import concurrent.futures
@@ -90,7 +91,7 @@ if __name__ == '__main__':
     D0 = 2.3 * 10**(-3) # diffusion coefficient
     dt = 5 * 10**(-9)   # time step
 
-    NP = SimMath.sqrtspace(10, 1000, 50)
+    NP = SimMath.sqrtspace(10, 10000, 300)
 
     # TODO(justin): simulation related functions should be in their own module...
     simulation = simulate_on_multiple_cores(NT, NP, D0, dt, repeats=3)
@@ -101,7 +102,7 @@ if __name__ == '__main__':
     plotting_format = simulation_as_plotting_format(simulation)
 
     plt.style.use('seaborn-v0_8-muted')
-    Plotter.uniform_sampling(plotting_format)
+    # Plotter.uniform_sampling(plotting_format)
     Plotter.verify_any_bias(plotting_format, D0, NT, dt)
     Plotter.fa(plotting_format)
     # Plotter.eigens(plotting_format)

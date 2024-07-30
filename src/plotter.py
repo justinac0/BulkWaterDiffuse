@@ -7,8 +7,6 @@ import matplotlib.pyplot as plt
 from particle import Particle
 from sim_math import SimMath
 
-import click
-
 class Plotter:
     @staticmethod
     def uniform_sampling(plotting_format):
@@ -35,7 +33,7 @@ class Plotter:
                 zs.append(z)
 
         ax.set_title('Uniform Sampling Projected On Surface Of Sphere')
-        ax.scatter(xs, ys, zs, color='blue', s=1, alpha=0.5)
+        ax.scatter(xs, ys, zs, color='blue', s=1)
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
@@ -78,7 +76,7 @@ class Plotter:
         # THETAS
         ax = axs[0][0]
         theta_theory = np.linspace(0, np.pi, len(thetas))
-        ax.hist(thetas, bins=30, density=True, alpha=0.6, color='red')
+        ax.hist(thetas, bins=30, density=True, color='red', alpha=0.7)
         ax.plot(theta_theory, 0.5 * np.sin(theta_theory), color='black')
         ax.set_title('Observed θ vs. Theoretical θ')
         ax.set_xlabel('θ (Spherical Coord, [0, π]) (bins=30)')
@@ -87,29 +85,17 @@ class Plotter:
         # PHIS
         ax = axs[0][1]
         phi_theory = np.linspace(0, 2 * np.pi, len(phis))
-        ax.hist(phis, bins=30, density=True, color='green')
+        ax.hist(phis, bins=30, density=True, color='green', alpha=0.7)
         ax.plot(phi_theory, [1 / (2 * np.pi)] * len(phis), color='black')
         ax.set_title('Observed φ vs. Theoretical φ')
         ax.set_xlabel('φ (Spherical Coord, [0, 2π]) (bins=30)')
         ax.set_ylabel('Counts')
 
-        # fig = plt.figure()
-        #fig.set_size_inches(8, 8)
-        #plt.title('Diffusion Tensor Eigen Values')
-        #plt.xlabel('Particle Count')
-        #plt.ylabel('Eigen Values')
-        #for tensor in eigen_diffusion_tensors:
-        #    plt.scatter([] * len(eigen_diffusion_tensor), eigen_diffusion_tensor, c='blue')
-
-        # plt.savefig(f'results/graphs/eigens.png')
-        # plt.show()
-
         # R
         ax = axs[1][0]
         ax.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
         ax.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
-        ax.hist(rs, bins=30, density=True, color='yellow')
-        # ax.plot(math.exp(-1/(4*D0*NT*dt)), color='black')
+        ax.hist(rs, bins=30, density=True, color='blue', alpha=0.7)
         ax.set_title('Observed r vs. Theoretical r (bins=30)')
         ax.set_xlabel('r')
         ax.set_ylabel('Counts')
@@ -127,10 +113,22 @@ class Plotter:
         plt.title('Fractional Anisotropy (FA)')
         plt.xlabel('1/√NP')
         plt.ylabel('FA')
+
+        xs = np.array([])
+        ys = np.array([])
         for key in keys:
             for data in plotting_format[key]:
                 index, particles, diffusion_tensor, eigen_diffusion_tensor, fa = data
-                plt.scatter(1/math.sqrt(len(particles)), fa, s=3, c='blue')
+                x = 1/math.sqrt(len(particles))
+                y = fa
+
+                xs = np.append(xs, x)
+                ys = np.append(ys, y)
+
+        plt.scatter(xs, ys, s=3, c='blue')
+        
+        a, b = np.polyfit(xs, ys, 1)
+        plt.plot(xs, a * xs + b, c='black')
 
         plt.savefig(f'results/graphs/fa.png')
         plt.show()
@@ -178,6 +176,6 @@ class Plotter:
                     ys.append(y)
                     zs.append(z)
 
-                ax.scatter(xs, ys, zs, s=1, alpha=0.5, c='blue')
+                ax.scatter(xs, ys, zs, s=1, c='blue')
                 plt.savefig(f'results/graphs/diffusion_{index}_{key}.png')
                 plt.show()
