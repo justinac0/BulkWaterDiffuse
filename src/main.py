@@ -34,8 +34,7 @@ def run_parallel(NT: int, NP: list[int], D0: float, dt: float, repeats: int) -> 
 
         for particle_count in NP:
             for i in range(0, repeats):
-                future = executor.submit(simulation_worker, i + 1, NT, particle_count, D0, dt)
-                print(i)
+                future = executor.submit(simulation_worker, i, NT, particle_count, D0, dt)
                 futures.append(future)
 
         for f in concurrent.futures.as_completed(futures):
@@ -45,16 +44,12 @@ def run_parallel(NT: int, NP: list[int], D0: float, dt: float, repeats: int) -> 
 
     return data
 
-def simulate_on_multiple_cores(NT: int, NP: list[int], D0: float, dt: float, repeats) -> list:
+def simulate_on_multiple_cores(NT: int, NP: list[int], D0: float, dt: float, repeats) -> tuple:
     start = time.time()
     data = run_parallel(NT, NP, D0, dt, repeats)
     end = time.time()
 
-    file = open(f'results/data/time_elapsed.txt', 'w')
-    file.write(f'time_elapsed: {end - start} seconds')
-    file.close()
-
-    return data
+    return (f'time_elapsed: {end - start} seconds', data)
 
 def simulation_as_plotting_format(simulations: list):
     plotting_format = {}
@@ -72,25 +67,14 @@ def simulation_as_plotting_format(simulations: list):
 
     return plotting_format
 
-if __name__ == '__main__':
-    NT = 300          # steps
-    D0 = 2.3*10**(-3) # diffusion coefficient
-    dt = 5*10**(-9)   # time step
-
-    NP = SimMath.equidistant_np_space(10, 1000, 100)
-
-    # TODO(justin): simulation related functions should be in their own module...
-    simulations = simulate_on_multiple_cores(NT, NP, D0, dt, repeats=3)
-    # playsound('resources/audio/water_drop_reverb.mp3')
-
-    # TODO(justin): If time permits; rework simulation plotting format...
-
+def write_simulations_to_yaml(simulations: list):
+    # TODO(justin): place below in some function
     particle_counts = []
-    simulation_toml = []
+    simulation_toml = {}
     for s in simulations:
-        particle_counts.append(len(s.particles))
-        simulation_toml.append(s.as_yaml())
-    
+        particle_counts.append(s.particle_count)
+        simulation_toml[f'sim-{s.index}-{s.particle_count}'] = s.as_dict()
+
     particle_counts = [e for e in set(particle_counts)] 
     particle_counts.sort()
 
@@ -100,12 +84,24 @@ if __name__ == '__main__':
         'production': simulation_toml
     }
 
-    # reading toml file
-    
-
     # writting toml file
-    with open('simulation.yaml', 'w') as file:
+    with open('results/data/simulation.yaml', 'w') as file:
         yaml.dump(data, file)
+
+if __name__ == '__main__':
+    NT = 300          # steps
+    D0 = 2.3*10**(-3) # diffusion coefficient
+    dt = 5*10**(-9)   # time step
+
+    NP = SimMath.equidistant_np_space(10, 100, 20)
+
+    # TODO(justin): simulation related functions should be in their own module...
+    elapsed_time, simulations = simulate_on_multiple_cores(NT, NP, D0, dt, repeats=3)
+    # playsound('resources/audio/water_drop_reverb.mp3')
+
+    print(elapsed_time)
+
+    write_simulations_to_yaml(simulations)
 
     # plotting_format = simulation_as_plotting_format(simulations)
 

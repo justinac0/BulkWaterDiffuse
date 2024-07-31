@@ -6,15 +6,12 @@ from particle import Particle
 class SimulationData:
     def __init__(self, index: int, particles: list[Particle], diffusion_tensor: list[list[float]], fractional_anisotropy: float):
         self.index                  = index
+        self.particle_count         = len(particles)
         self.particles              = particles
         self.diffusion_tensor       = diffusion_tensor
         self.fractional_anisotropy  = fractional_anisotropy
 
-    # particles, DT, eigen, FA reduntant...
-    def get(self):
-        return (self.index, self.particles, self.diffusion_tensor, self.fractional_anisotropy)
-
-    def as_yaml(self) -> dict:
+    def as_dict(self) -> dict:
         # convert particle positions to yaml
         particles_yaml = []
         for p in self.particles:
@@ -25,23 +22,23 @@ class SimulationData:
             particles_yaml.append(inner_yaml)
 
         # convert diffusion tensor values into yaml
-        diffusion_tensor_yaml = [] 
+        diffusion_tensor_yaml = {} 
         row_idx = 0
         for row in self.diffusion_tensor:
             col_idx = 0
             for col in row:
+                diffusion_tensor_yaml[f'D{row_idx}{col_idx}'] = float(col)
                 col_idx += 1
-                inner_yaml = {f'D{row_idx}{col_idx}': float(col)}
-                diffusion_tensor_yaml.append(inner_yaml)
 
             row_idx += 1
 
+        particle_count = len(self.particles)
         simulation_yaml = {
-            f'simulation.{self.index}.{len(self.particles)}': {
+                'run_index': self.index,
+                'particle_count': particle_count,
                 'particles': particles_yaml,
                 'diffusion_tensor': diffusion_tensor_yaml,
                 'fractional_anisotropy': float(self.fractional_anisotropy)
-            }
         }
 
         return simulation_yaml
