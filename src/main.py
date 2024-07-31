@@ -4,9 +4,11 @@
 
 import time
 import concurrent.futures
+import yaml 
 
 from playsound3 import playsound
 
+import numpy as np
 import matplotlib.pyplot as plt
 
 from sim_math import SimMath
@@ -15,7 +17,7 @@ from simulation import Simulation, SimulationData
 
 def simulation_worker(i: int, NT: int, NP: int, D0: float, dt: float) -> SimulationData:
     start = time.time()
-    simulation = Simulation(NT, NP, D0, dt)
+    simulation = Simulation(i, NT, NP, D0, dt)
     simulation_data = simulation.run(i)
     end = time.time()
 
@@ -33,6 +35,7 @@ def run_parallel(NT: int, NP: list[int], D0: float, dt: float, repeats: int) -> 
         for particle_count in NP:
             for i in range(0, repeats):
                 future = executor.submit(simulation_worker, i + 1, NT, particle_count, D0, dt)
+                print(i)
                 futures.append(future)
 
         for f in concurrent.futures.as_completed(futures):
@@ -42,7 +45,7 @@ def run_parallel(NT: int, NP: list[int], D0: float, dt: float, repeats: int) -> 
 
     return data
 
-def simulate_on_multiple_cores(NT: int, NP: list[int], D0: float, dt: float, repeats=3) -> list:
+def simulate_on_multiple_cores(NT: int, NP: list[int], D0: float, dt: float, repeats) -> list:
     start = time.time()
     data = run_parallel(NT, NP, D0, dt, repeats)
     end = time.time()
@@ -74,15 +77,35 @@ if __name__ == '__main__':
     D0 = 2.3*10**(-3) # diffusion coefficient
     dt = 5*10**(-9)   # time step
 
-    NP = SimMath.equidistant_np_space(10, 100, 1)
+    NP = SimMath.equidistant_np_space(10, 1000, 100)
 
     # TODO(justin): simulation related functions should be in their own module...
     simulations = simulate_on_multiple_cores(NT, NP, D0, dt, repeats=3)
     # playsound('resources/audio/water_drop_reverb.mp3')
 
     # TODO(justin): If time permits; rework simulation plotting format...
+
+    particle_counts = []
+    simulation_toml = []
     for s in simulations:
-        print(s.as_toml())
+        particle_counts.append(len(s.particles))
+        simulation_toml.append(s.as_yaml())
+    
+    particle_counts = [e for e in set(particle_counts)] 
+    particle_counts.sort()
+
+    data = {
+        'version': '0.0.1',
+        'particle_counts': particle_counts,
+        'production': simulation_toml
+    }
+
+    # reading toml file
+    
+
+    # writting toml file
+    with open('simulation.yaml', 'w') as file:
+        yaml.dump(data, file)
 
     # plotting_format = simulation_as_plotting_format(simulations)
 
