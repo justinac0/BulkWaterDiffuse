@@ -15,6 +15,32 @@ class SimulationData:
     def get(self):
         return (self.index, self.particles, self.diffusion_tensor, self.eigen_diffusion_tensor, self.fractional_anisotropy)
 
+    def as_toml(self) -> dict:
+        # convert particle positions to toml
+        particles_toml = []
+        for p in self.particles:
+            x, y, z = p.position
+
+            inner_toml = {"x": x, "y": y, "z": z}
+            particles_toml.append(inner_toml)
+
+        # convert diffusion tensor into toml
+        diffusion_tensor_toml = []
+
+        # convert eigen diffusion tensor into toml
+        eigen_diffusion_tensor_toml = []
+
+        # convert fractional anisotropy into toml
+        fractional_anisotropy_toml = []
+
+        simulation = {
+            f"simulation.{self.index}": {
+                "particles": particles_toml
+            }
+        }
+
+        return simulation
+
 class Simulation:
     def __init__(self, Nt, Np, D0, dt):
         self.Nt = Nt

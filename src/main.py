@@ -16,13 +16,13 @@ from simulation import Simulation, SimulationData
 def simulation_worker(i: int, NT: int, NP: int, D0: float, dt: float) -> SimulationData:
     start = time.time()
     simulation = Simulation(NT, NP, D0, dt)
-    data = simulation.run(i).get()
+    simulation_data = simulation.run(i)
     end = time.time()
 
     elapsed = f'{(end - start):.2f}'
     print(f'simulation_worker> [completed]: {i}, {NT}, {NP}, elapsed = {elapsed} seconds')
 
-    return data
+    return simulation_data
 
 def run_parallel(NT: int, NP: list[int], D0: float, dt: float, repeats: int) -> list:
     data = []
@@ -32,7 +32,7 @@ def run_parallel(NT: int, NP: list[int], D0: float, dt: float, repeats: int) -> 
 
         for particle_count in NP:
             for i in range(0, repeats):
-                future = executor.submit(simulation_worker, i, NT, particle_count, D0, dt)
+                future = executor.submit(simulation_worker, i + 1, NT, particle_count, D0, dt)
                 futures.append(future)
 
         for f in concurrent.futures.as_completed(futures):
@@ -74,18 +74,21 @@ if __name__ == '__main__':
     D0 = 2.3*10**(-3) # diffusion coefficient
     dt = 5*10**(-9)   # time step
 
-    NP = SimMath.equidistant_np_space(10, 10000, 5)
+    NP = SimMath.equidistant_np_space(10, 100, 1)
 
     # TODO(justin): simulation related functions should be in their own module...
-    simulation = simulate_on_multiple_cores(NT, NP, D0, dt, repeats=3)
+    simulations = simulate_on_multiple_cores(NT, NP, D0, dt, repeats=3)
     # playsound('resources/audio/water_drop_reverb.mp3')
 
     # TODO(justin): If time permits; rework simulation plotting format...
-    plotting_format = simulation_as_plotting_format(simulation)
+    for s in simulations:
+        print(s.as_toml())
 
-    plt.style.use('seaborn-v0_8-muted')
+    # plotting_format = simulation_as_plotting_format(simulations)
+
+    # plt.style.use('seaborn-v0_8-muted')
     # Plotter.uniform_sampling(plotting_format)
-    Plotter.verify_any_bias(plotting_format, D0, NT, dt)
+    # Plotter.verify_any_bias(plotting_format, D0, NT, dt)
     # Plotter.fa(plotting_format)
     # Plotter.eigens(plotting_format)
     # Plotter.diffusion(plotting_format)
