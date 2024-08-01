@@ -1,10 +1,10 @@
-# TODO(justin): rework how we gather info for repeated tests... all test data needs to be placed in toml on simulation completion
 # TODO(justin): create individual graphs for runs then one graph with all data on it....
 # TODO(justin): make everything that touches math be numpy please :D
 
 import time
 import concurrent.futures
 import yaml 
+from yaml.loader import SafeLoader
 
 from playsound3 import playsound
 
@@ -51,33 +51,48 @@ def simulate_on_multiple_cores(NT: int, NP: list[int], D0: float, dt: float, rep
 
     return (f'time_elapsed: {end - start} seconds', data)
 
-def write_simulations_to_yaml(simulations: list):
-    # TODO(justin): place below in some function
+def write_simulations_to_yaml(NT: int, D0: float, dt: float, simulations: list):
     particle_counts = []
     simulation_toml = {}
     for s in simulations:
         particle_counts.append(s.particle_count)
-        simulation_toml[f'sim-{s.index}-{s.particle_count}'] = s.as_dict()
+        simulation_toml[f'sim_{s.index}_{s.particle_count}'] = s.as_dict()
 
     particle_counts = [e for e in set(particle_counts)] 
     particle_counts.sort()
 
+    simulation_toml['particle_counts'] = particle_counts
+    simulation_toml['NT'] = NT
+    simulation_toml['D0'] = D0
+    simulation_toml['dt'] = dt
+
     data = {
         'version': '0.0.1',
-        'particle_counts': particle_counts,
         'production': simulation_toml
     }
 
-    # writting toml file
     with open('results/data/simulation.yaml', 'w') as file:
         yaml.dump(data, file)
+
+def read_yaml_to_object(file_path: str) -> object:
+    data = None
+    with open(file_path) as file:
+        data = yaml.load(file, Loader=SafeLoader)
+
+    return data
+
+# returns the object inside aggregate yaml object
+def get_simulation_info(simulation_object: object, run: int, NP: int):
+    data = simulation_object['production'][f'sim_{run}_{NP}']
+
+    return data
 
 if __name__ == '__main__':
     NT = 300          # steps
     D0 = 2.3*10**(-3) # diffusion coefficient
     dt = 5*10**(-9)   # time step
 
-    NP = SimMath.equidistant_np_space(10, 100, 20)
+    NP = SimMath.equidistant_np_space(10, 1000, 100)
 
     # TODO(justin): simulation related functions should be in their own module...
     elapsed_time, simulations = simulate_on_multiple_cores(NT, NP, D0, dt, repeats=3)
@@ -85,13 +100,16 @@ if __name__ == '__main__':
 
     print(elapsed_time)
 
-    write_simulations_to_yaml(simulations)
+    write_simulations_to_yaml(NT, D0, dt, simulations)
 
-    # plotting_format = simulation_as_plotting_format(simulations)
+    simulation_object = read_yaml_to_object('results/data/simulation.yaml')
 
-    # plt.style.use('seaborn-v0_8-muted')
-    # Plotter.uniform_sampling(plotting_format)
-    # Plotter.verify_any_bias(plotting_format, D0, NT, dt)
-    # Plotter.fa(plotting_format)
+    plt.style.use('seaborn-v0_8-muted')
+
+    specific_run = get_simulation_info(simulation_object, 0, 1000)
+
+    #Plotter.uniform_sampling(specific_run)
+    #Plotter.verify_any_bias(specific_run)
+    Plotter.fa(simulation_object['production'])
     # Plotter.eigens(plotting_format)
     # Plotter.diffusion(plotting_format)

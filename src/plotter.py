@@ -2,7 +2,6 @@ import numpy as np
 
 import math
 
-from scipy.stats import rayleigh
 import matplotlib.pyplot as plt
 
 from particle import Particle
@@ -10,14 +9,7 @@ from sim_math import SimMath
 
 class Plotter:
     @staticmethod
-    def uniform_sampling(plotting_format):
-        keys = plotting_format.keys()
-        particlekv = []
-        for key in keys:
-            for data in plotting_format[key]:
-                index, ps, _, _, _ = data
-                particlekv.append((index, ps))
-
+    def uniform_sampling(simulation_object: object):
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
         ax.set_aspect('equal', 'box')
@@ -26,12 +18,15 @@ class Plotter:
         ys = []
         zs = []
 
-        for index, particles in particlekv:
-            for p in particles:
-                x, y, z = SimMath.project_to_sphere_surface(p.position)
-                xs.append(x)
-                ys.append(y)
-                zs.append(z)
+        for p in simulation_object['particles']:
+            x = p['x']
+            y = p['y']
+            z = p['z']
+
+            x, y, z = SimMath.project_to_sphere_surface((x, y, z))
+            xs.append(x)
+            ys.append(y)
+            zs.append(z)
 
         ax.set_title('Uniform Sampling Projected On Surface Of Sphere')
         ax.scatter(xs, ys, zs, color='blue', s=1)
@@ -43,32 +38,23 @@ class Plotter:
         plt.show()
 
     @staticmethod
-    def verify_any_bias(plotting_format, D0, NT, dt):
-        keys = plotting_format.keys()
-        particlekv = []
-        eigen_diffusion_tensors = []
-        for key in keys:
-            for data in plotting_format[key]:
-                index, ps, _, eigen_diffusion_tensor, _ = data
-                particlekv.append((index, ps))
-
-                eigen_diffusion_tensors.append(eigen_diffusion_tensor)
-
+    def verify_any_bias(simulation_object):
         thetas = []
         phis = []
         rs = np.array([])
 
-        for _, v in particlekv: # NOTE(justin): do we need multiple graphs?
-            for p in v: # particles in particle lists
-                position = p.position
-                x, y, z = SimMath.project_to_sphere_surface(position)
-                _, theta, phi = SimMath.cartesian_to_spherical((x, y, z))
+        for p in simulation_object['particles']: # particles in particle lists
+            x = p['x']
+            y = p['y']
+            z = p['z']
 
-                x, y, z = position
-                r_length = math.sqrt(x**2 + y**2 + z**2) # from origin (a.k.a simulation start point)
-                rs = np.append(rs, r_length)
-                thetas.append(theta)
-                phis.append(phi)
+            px, py, pz = SimMath.project_to_sphere_surface((x, y, z))
+            _, theta, phi = SimMath.cartesian_to_spherical((px, py, pz))
+
+            r_length = math.sqrt(x**2 + y**2 + z**2) # from origin (a.k.a simulation start point)
+            rs = np.append(rs, r_length)
+            thetas.append(theta)
+            phis.append(phi)
 
         fig, axs = plt.subplots(2, 2)
         fig.set_size_inches(12, 10)
@@ -110,9 +96,7 @@ class Plotter:
         plt.show()
 
     @staticmethod
-    def fa(plotting_format):
-        keys = plotting_format.keys()
-
+    def fa(simulation_object):
         fig = plt.figure()
         fig.set_size_inches(8, 8)
         plt.title('Fractional Anisotropy (FA)')
@@ -121,14 +105,18 @@ class Plotter:
 
         xs = np.array([])
         ys = np.array([])
-        for key in keys:
-            for data in plotting_format[key]:
-                index, particles, diffusion_tensor, eigen_diffusion_tensor, fa = data
-                x = 1/math.sqrt(len(particles))
-                y = fa
+        
+        print(simulation_object['particle_counts'])
+        for counts in simulation_object['particle_counts']:
+            sim = simulation_object[f'sim_0_{counts}']
+            FA = sim['fractional_anisotropy']
+            NP = sim['particle_count']
 
-                xs = np.append(xs, x)
-                ys = np.append(ys, y)
+            x = 1/math.sqrt(NP)
+            y = FA
+
+            xs = np.append(xs, x)
+            ys = np.append(ys, y)
 
         plt.scatter(xs, ys, s=3, c='blue')
 

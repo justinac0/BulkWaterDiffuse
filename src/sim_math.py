@@ -44,6 +44,7 @@ class SimMath:
 
         return surface_projected_point
 
+    @staticmethod
     def spherical_point() -> tuple:
         point = SimMath.cube_point(-1, 1, -1, 1, -1, 1)
         while not SimMath.is_point_in_sphere(point):
@@ -51,9 +52,9 @@ class SimMath:
 
         return point
 
+    @staticmethod
     def projected_surface_spherical_point() -> tuple:
         return SimMath.project_to_sphere_surface(SimMath.spherical_point())
-
 
     @staticmethod
     def calculate_fractional_anisotropy(D1, D2, D3):
@@ -74,7 +75,7 @@ class SimMath:
         return (dr * dx, dr * dy, dr * dz)
 
     @staticmethod
-    def generate_uniform_points(N: int) -> tuple:
+    def generate_uniform_points(N: int) -> list:
         points = []
 
         for _ in range(N):
