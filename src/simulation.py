@@ -27,7 +27,7 @@ class SimulationData:
         for row in self.diffusion_tensor:
             col_idx = 0
             for col in row:
-                diffusion_tensor_yaml[f'D{row_idx}{col_idx}'] = float(col)
+                diffusion_tensor_yaml[f'D{row_idx+1}{col_idx+1}'] = float(col)
                 col_idx += 1
 
             row_idx += 1

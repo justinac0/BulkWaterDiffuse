@@ -4,7 +4,6 @@ import math
 
 import matplotlib.pyplot as plt
 
-from particle import Particle
 from sim_math import SimMath
 
 class Plotter:
@@ -13,6 +12,10 @@ class Plotter:
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
         ax.set_aspect('equal', 'box')
+
+        ax.ticklabel_format(style='sci', axis='x', scilimits=(-3, 3), useMathText=True)
+        ax.ticklabel_format(style='sci', axis='y', scilimits=(-3, 3), useMathText=True)
+        ax.ticklabel_format(style='sci', axis='z', scilimits=(-3, 3), useMathText=True)
 
         xs = []
         ys = []
@@ -38,7 +41,7 @@ class Plotter:
         plt.show()
 
     @staticmethod
-    def verify_any_bias(simulation_object):
+    def verify_any_bias(simulation_object: object):
         thetas = []
         phis = []
         rs = np.array([])
@@ -96,7 +99,7 @@ class Plotter:
         plt.show()
 
     @staticmethod
-    def fa(simulation_object):
+    def fa(simulation_object: object):
         fig = plt.figure()
         fig.set_size_inches(8, 8)
         plt.title('Fractional Anisotropy (FA)')
@@ -105,8 +108,7 @@ class Plotter:
 
         xs = np.array([])
         ys = np.array([])
-        
-        print(simulation_object['particle_counts'])
+
         for counts in simulation_object['particle_counts']:
             sim = simulation_object[f'sim_0_{counts}']
             FA = sim['fractional_anisotropy']
@@ -127,48 +129,51 @@ class Plotter:
         plt.show()
 
     @staticmethod
-    def eigens(plotting_format):
-        keys = plotting_format.keys()
-
+    def eigens(simulation_object: object):
         fig = plt.figure()
         fig.set_size_inches(8, 8)
         plt.title('Diffusion Tensor Eigen Values')
         plt.xlabel('Particle Count')
         plt.ylabel('Eigen Values')
-        for key in keys:
-            for data in plotting_format[key]:
-                _, _, _, eigen_diffusion_tensor, _ = data
-                plt.scatter([key] * len(eigen_diffusion_tensor), eigen_diffusion_tensor, c='blue')
+
+        for count in simulation_object['particle_counts']:
+            D11 = simulation_object[f'sim_0_{count}']['diffusion_tensor']['D11']
+            D22 = simulation_object[f'sim_0_{count}']['diffusion_tensor']['D22']
+            D33 = simulation_object[f'sim_0_{count}']['diffusion_tensor']['D33']
+
+            plt.scatter([count] * 3, [D11, D22, D33], c='blue')
 
         plt.savefig(f'results/graphs/eigens.png')
         plt.show()
-    
+
     @staticmethod
-    def diffusion(plotting_format):
-        keys = plotting_format.keys()
+    def diffusion(simulation_object: object):
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        ax.set_aspect('equal', 'box')
 
-        for key in keys:
-            for data in plotting_format[key]:
-                index, particles, _, _, _ = data
+        ax.ticklabel_format(style='sci', axis='x', scilimits=(-3, 3), useMathText=True)
+        ax.ticklabel_format(style='sci', axis='y', scilimits=(-3, 3), useMathText=True)
+        ax.ticklabel_format(style='sci', axis='z', scilimits=(-3, 3), useMathText=True)
 
-                fig = plt.figure()
-                fig.set_size_inches(8, 8)
-                ax = fig.add_subplot(111, projection='3d')
-                ax.set_aspect('equal', 'box')
-                ax.set_title(f'Bulk Water Diffusion (run={index}, NP={key})')
-                ax.set_xlabel('X (mm)')
-                ax.set_ylabel('Y (mm)')
-                ax.set_zlabel('Z (mm)')
+        xs = []
+        ys = []
+        zs = []
 
-                xs = []
-                ys = []
-                zs = []
-                for p in particles:
-                    x, y, z = p.get_cartesian_position()
-                    xs.append(x)
-                    ys.append(y)
-                    zs.append(z)
+        for p in simulation_object['particles']:
+            x = p['x']
+            y = p['y']
+            z = p['z']
 
-                ax.scatter(xs, ys, zs, s=1, c='blue')
-                plt.savefig(f'results/graphs/diffusion_{index}_{key}.png')
-                plt.show()
+            xs.append(x)
+            ys.append(y)
+            zs.append(z)
+
+        ax.set_title('Diffusion of Bulk Water')
+        ax.scatter(xs, ys, zs, color='blue', s=1)
+        ax.set_xlabel('X')
+        ax.set_ylabel('Y')
+        ax.set_zlabel('Z')
+
+        plt.savefig(f'results/graphs/diffuse.png')
+        plt.show()

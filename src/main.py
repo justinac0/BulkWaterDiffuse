@@ -79,11 +79,11 @@ def read_yaml_to_object(file_path: str) -> object:
     with open(file_path) as file:
         data = yaml.load(file, Loader=SafeLoader)
 
-    return data
+    return data['production']
 
 # returns the object inside aggregate yaml object
 def get_simulation_info(simulation_object: object, run: int, NP: int):
-    data = simulation_object['production'][f'sim_{run}_{NP}']
+    data = simulation_object[f'sim_{run}_{NP}']
 
     return data
 
@@ -96,7 +96,7 @@ if __name__ == '__main__':
 
     # TODO(justin): simulation related functions should be in their own module...
     elapsed_time, simulations = simulate_on_multiple_cores(NT, NP, D0, dt, repeats=3)
-    # playsound('resources/audio/water_drop_reverb.mp3')
+    playsound('resources/audio/water_drop_reverb.mp3')
 
     print(elapsed_time)
 
@@ -108,8 +108,8 @@ if __name__ == '__main__':
 
     specific_run = get_simulation_info(simulation_object, 0, 1000)
 
-    #Plotter.uniform_sampling(specific_run)
-    #Plotter.verify_any_bias(specific_run)
-    Plotter.fa(simulation_object['production'])
-    # Plotter.eigens(plotting_format)
-    # Plotter.diffusion(plotting_format)
+    Plotter.uniform_sampling(specific_run)
+    Plotter.verify_any_bias(specific_run)
+    Plotter.fa(simulation_object)
+    Plotter.eigens(simulation_object)
+    Plotter.diffusion(specific_run)
