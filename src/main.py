@@ -51,22 +51,6 @@ def simulate_on_multiple_cores(NT: int, NP: list[int], D0: float, dt: float, rep
 
     return (f'time_elapsed: {end - start} seconds', data)
 
-def simulation_as_plotting_format(simulations: list):
-    plotting_format = {}
-
-    for simulation in simulations:
-        index, particles, diffusion_tensor, eigen_diffusion_tensor, fa = simulation
-
-        key = len(particles)
-        payload = (index, particles, diffusion_tensor, eigen_diffusion_tensor, fa)
-
-        if not plotting_format.get(key):
-            plotting_format.setdefault(key, [payload])
-        else:
-            plotting_format[key].append(payload)
-
-    return plotting_format
-
 def write_simulations_to_yaml(simulations: list):
     # TODO(justin): place below in some function
     particle_counts = []
