@@ -92,7 +92,7 @@ if __name__ == '__main__':
     D0 = 2.3*10**(-3) # diffusion coefficient
     dt = 5*10**(-9)   # time step
 
-    NP = SimMath.equidistant_np_space(10, 1000, 100)
+    NP = SimMath.equidistant_np_space(10, 30000, 300)
 
     # TODO(justin): simulation related functions should be in their own module...
     elapsed_time, simulations = simulate_on_multiple_cores(NT, NP, D0, dt, repeats=3)
@@ -106,7 +106,9 @@ if __name__ == '__main__':
 
     plt.style.use('seaborn-v0_8-muted')
 
-    specific_run = get_simulation_info(simulation_object, 0, 1000)
+    rand_np = simulation_object['particle_counts']
+
+    specific_run = get_simulation_info(simulation_object, 0, max(rand_np))
 
     Plotter.uniform_sampling(specific_run)
     Plotter.verify_any_bias(specific_run)
