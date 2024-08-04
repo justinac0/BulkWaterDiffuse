@@ -1,4 +1,4 @@
-from sim_math import SimMath
+import simulation.math as smath
 
 class Particle:
     def __init__(self, position: tuple):
@@ -6,8 +6,8 @@ class Particle:
 
     # random walk in unbiased direction
     def walk(self, D, dt):
-        rw_direction = SimMath.projected_surface_spherical_point()
-        x, y, z = SimMath.calculate_displacement(D, dt, rw_direction)
+        rw_direction = smath.projected_surface_spherical_point()
+        x, y, z = smath.calculate_displacement(D, dt, rw_direction)
 
         px, py, pz = self.position
         self.position = (px + x, py + y, pz + z)
@@ -18,4 +18,4 @@ class Particle:
 
     # r, theta, phi
     def get_spherical_position(self):
-        return SimMath.cartesian_to_spherical(self.position)
+        return smath.cartesian_to_spherical(self.position)

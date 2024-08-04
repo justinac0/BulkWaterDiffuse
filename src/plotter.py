@@ -4,7 +4,7 @@ import math
 
 import matplotlib.pyplot as plt
 
-from sim_math import SimMath
+from simulation.math import SimMath
 
 class Plotter:
     @staticmethod

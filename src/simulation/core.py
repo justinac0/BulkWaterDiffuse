@@ -1,7 +1,7 @@
 import numpy as np
 
-from sim_math import SimMath
-from particle import Particle
+import simulation.math as smath
+from simulation.particle import Particle
 
 class SimulationData:
     def __init__(self, index: int, particles: list[Particle], diffusion_tensor: list[list[float]], fractional_anisotropy: float):
@@ -90,6 +90,6 @@ class Simulation:
 
 
         # calculate fractional anisotropy of eigen values
-        FA = SimMath.calculate_fractional_anisotropy(Dxx, Dyy, Dzz)
+        FA = smath.calculate_fractional_anisotropy(Dxx, Dyy, Dzz)
 
         return SimulationData(index, particles, diffusion_tensor, FA)
