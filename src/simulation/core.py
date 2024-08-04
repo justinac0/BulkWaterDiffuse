@@ -2,14 +2,15 @@ import numpy as np
 
 import simulation.math as smath
 from simulation.particle import Particle
+from simulation.io.yaml import SimKeys
 
 class SimulationData:
     def __init__(self, index: int, particles: list[Particle], diffusion_tensor: list[list[float]], fractional_anisotropy: float):
-        self.index                  = index
-        self.particle_count         = len(particles)
-        self.particles              = particles
-        self.diffusion_tensor       = diffusion_tensor
-        self.fractional_anisotropy  = fractional_anisotropy
+        self.index = index
+        self.particle_count = len(particles)
+        self.particles = particles
+        self.diffusion_tensor = diffusion_tensor
+        self.fractional_anisotropy = fractional_anisotropy
 
     def as_dict(self) -> dict:
         # convert particle positions to yaml
@@ -34,11 +35,11 @@ class SimulationData:
 
         particle_count = len(self.particles)
         simulation_yaml = {
-                'run_index': self.index,
-                'particle_count': particle_count,
-                'particles': particles_yaml,
-                'diffusion_tensor': diffusion_tensor_yaml,
-                'fractional_anisotropy': float(self.fractional_anisotropy)
+                SimKeys.RUN_INDEX: self.index,
+                SimKeys.PARTICLE_COUNT: particle_count,
+                SimKeys.PARTICLE_LIST: particles_yaml,
+                SimKeys.DIFFUSION_TENSOR: diffusion_tensor_yaml,
+                SimKeys.FRACTIONAL_ANISOTROPY: float(self.fractional_anisotropy)
         }
 
         return simulation_yaml
@@ -56,7 +57,7 @@ class Simulation:
     def run(self, index) -> SimulationData:
         # initialize particles at origin
         particles = []
-        for i in range(0, self.Np):
+        for _ in range(0, self.Np):
             particles.append(Particle((0, 0, 0)))
 
         # run random walk
@@ -90,6 +91,6 @@ class Simulation:
 
 
         # calculate fractional anisotropy of eigen values
-        FA = smath.calculate_fractional_anisotropy(Dxx, Dyy, Dzz)
+        fractional_anisotropy = smath.calculate_fractional_anisotropy(Dxx, Dyy, Dzz)
 
-        return SimulationData(index, particles, diffusion_tensor, FA)
+        return SimulationData(index, particles, diffusion_tensor, fractional_anisotropy)
