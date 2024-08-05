@@ -2,7 +2,7 @@ import numpy as np
 
 import simulation.math as smath
 from simulation.particle import Particle
-from simulation.io.yaml import SimKeys
+import simulation.io.yaml_keys as keys
 
 class SimulationData:
     def __init__(self, index: int, particles: list[Particle], diffusion_tensor: list[list[float]], fractional_anisotropy: float):
@@ -35,11 +35,11 @@ class SimulationData:
 
         particle_count = len(self.particles)
         simulation_yaml = {
-                SimKeys.RUN_INDEX: self.index,
-                SimKeys.PARTICLE_COUNT: particle_count,
-                SimKeys.PARTICLE_LIST: particles_yaml,
-                SimKeys.DIFFUSION_TENSOR: diffusion_tensor_yaml,
-                SimKeys.FRACTIONAL_ANISOTROPY: float(self.fractional_anisotropy)
+                keys.RUN_INDEX: self.index,
+                keys.PARTICLE_COUNT: particle_count,
+                keys.PARTICLE_LIST: particles_yaml,
+                keys.DIFFUSION_TENSOR: diffusion_tensor_yaml,
+                keys.FRACTIONAL_ANISOTROPY: float(self.fractional_anisotropy)
         }
 
         return simulation_yaml
@@ -93,4 +93,4 @@ class Simulation:
         # calculate fractional anisotropy of eigen values
         fractional_anisotropy = smath.calculate_fractional_anisotropy(Dxx, Dyy, Dzz)
 
-        return SimulationData(index, particles, diffusion_tensor, fractional_anisotropy)
+        return SimulationData(index, particles, list(diffusion_tensor), fractional_anisotropy)

@@ -5,6 +5,7 @@ import math
 import matplotlib.pyplot as plt
 
 import simulation.math as smath
+import simulation.io.yaml_keys as keys
 
 def uniform_sampling(simulation_object: object):
     fig = plt.figure()
@@ -19,7 +20,7 @@ def uniform_sampling(simulation_object: object):
     ys = []
     zs = []
 
-    for p in simulation_object['particles']:
+    for p in simulation_object[keys.PARTICLE_LIST]:
         x = p['x']
         y = p['y']
         z = p['z']
@@ -43,7 +44,7 @@ def verify_any_bias(simulation_object: object):
     phis = []
     rs = np.array([])
 
-    for p in simulation_object['particles']: # particles in particle lists
+    for p in simulation_object[keys.PARTICLE_LIST]: # particles in particle lists
         x = p['x']
         y = p['y']
         z = p['z']
@@ -105,10 +106,10 @@ def fa(simulation_object: object):
     xs = np.array([])
     ys = np.array([])
 
-    for counts in simulation_object['counts']:
+    for counts in simulation_object[keys.PARTICLE_COUNT]:
         sim = simulation_object[f'sim_0_{counts}']
-        FA = sim['fractional_anisotropy']
-        NP = sim['particle_count']
+        FA = sim[keys.FRACTIONAL_ANISOTROPY]
+        NP = sim[keys.PARTICLE_COUNT]
 
         x = 1/math.sqrt(NP)
         y = FA
@@ -131,10 +132,10 @@ def eigens(simulation_object: object):
     plt.xlabel('Particle Count')
     plt.ylabel('Eigen Values')
 
-    for count in simulation_object['particle_counts']:
-        D11 = simulation_object[f'sim_0_{count}']['diffusion_tensor']['D11']
-        D22 = simulation_object[f'sim_0_{count}']['diffusion_tensor']['D22']
-        D33 = simulation_object[f'sim_0_{count}']['diffusion_tensor']['D33']
+    for count in simulation_object[keys.PARTICLE_COUNT]:
+        D11 = simulation_object[f'sim_0_{count}'][keys.DIFFUSION_TENSOR]['D11']
+        D22 = simulation_object[f'sim_0_{count}'][keys.DIFFUSION_TENSOR]['D22']
+        D33 = simulation_object[f'sim_0_{count}'][keys.DIFFUSION_TENSOR]['D33']
 
         plt.scatter([count] * 3, [D11, D22, D33], c='blue')
 
@@ -154,7 +155,7 @@ def diffusion(simulation_object: object):
     ys = []
     zs = []
 
-    for p in simulation_object['particles']:
+    for p in simulation_object[keys.PARTICLE_LIST]:
         x = p['x']
         y = p['y']
         z = p['z']
