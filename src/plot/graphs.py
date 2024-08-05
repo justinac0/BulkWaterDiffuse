@@ -20,7 +20,7 @@ def uniform_sampling(simulation_object: object):
     ys = []
     zs = []
 
-    for p in simulation_object[keys.PARTICLE_LIST]:
+    for p in simulation_object[keys.PARTICLE_LIST][:1000]:
         x = p['x']
         y = p['y']
         z = p['z']
@@ -39,7 +39,10 @@ def uniform_sampling(simulation_object: object):
     plt.savefig(f'results/graphs/uniform_sampling.png')
     plt.show()
 
-def verify_any_bias(simulation_object: object):
+def expected_pdf(r, D, t):
+    return r**2 * np.exp(-r**2 / (4 * D * t))
+
+def verify_any_bias(simulation_object: object, D0: float, NT: int, dt: float):
     thetas = []
     phis = []
     rs = np.array([])
@@ -64,29 +67,32 @@ def verify_any_bias(simulation_object: object):
     # THETAS
     ax = axs[0][0]
     theta_theory = np.linspace(0, np.pi, len(thetas))
-    ax.hist(thetas, bins=100, color='red', density=True, alpha=0.7)
+    ax.hist(thetas, bins=50, color='red', density=True, alpha=0.7)
     ax.plot(theta_theory, 0.5 * np.sin(theta_theory), color='black')
     ax.set_title('Observed θ vs. Theoretical θ')
-    ax.set_xlabel('θ (Spherical Coord, [0, π]) (bins=100)')
+    ax.set_xlabel('θ (Spherical Coord, [0, π]) (bins=50)')
     ax.set_ylabel('Counts')
 
     # PHIS
     ax = axs[0][1]
     phi_theory = np.linspace(0, 2 * np.pi, len(phis))
-    ax.hist(phis, bins=100, color='green', density=True, alpha=0.7)
+    ax.hist(phis, bins=50, color='green', density=True, alpha=0.7)
     ax.plot(phi_theory, [1 / (2 * np.pi)] * len(phis), color='black')
     ax.set_title('Observed φ vs. Theoretical φ')
-    ax.set_xlabel('φ (Spherical Coord, [0, 2π]) (bins=100)')
+    ax.set_xlabel('φ (Spherical Coord, [0, 2π]) (bins=50)')
     ax.set_ylabel('Counts')
 
     # R
     ax = axs[1][0]
+    r_values = np.linspace(0, np.max(np.abs(rs)), len(rs))
+    expected_values = expected_pdf(r_values, D0, NT * dt)
+    scaling_factor = np.trapz(expected_values, r_values)
+    expected_values /= scaling_factor
     ax.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
     ax.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
-
-    ax.hist(rs, bins=100, density=True, color='blue', alpha=0.7)
-
-    ax.set_title('Observed r vs. Theoretical r (bins=100)')
+    ax.hist(rs, bins=50, density=True, color='blue', alpha=0.7)
+    ax.plot(r_values, expected_values, color='black')
+    ax.set_title('Observed r vs. Theoretical r (bins=50)')
     ax.set_xlabel('r')
     ax.set_ylabel('Counts')
 
@@ -166,9 +172,9 @@ def diffusion(simulation_object: object):
 
     ax.set_title('Diffusion of Bulk Water')
     ax.scatter(xs, ys, zs, color='blue', s=1)
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('Z')
+    ax.set_xlabel('X (mm)')
+    ax.set_ylabel('Y (mm)')
+    ax.set_zlabel('Z (mm)')
 
     plt.savefig(f'results/graphs/diffuse.png')
     plt.show()

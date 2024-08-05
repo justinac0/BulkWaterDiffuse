@@ -16,4 +16,3 @@ if __name__ == '__main__':
     playsound('resources/audio/water_drop_reverb.mp3')
 
     yamlhelper.write_simulations_file(NT, D0, dt, simulations, repeats, elapsed_time, 'results/data/simulation.yaml')
-
