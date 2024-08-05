@@ -60,46 +60,48 @@ def verify_any_bias(simulation_object: object, D0: float, NT: int, dt: float):
         thetas.append(theta)
         phis.append(phi)
 
-    fig, axs = plt.subplots(2, 2)
-    fig.set_size_inches(10, 14)
-    fig.set_dpi(100)
-
     # THETAS
-    ax = axs[0][0]
+    fig = plt.figure()
+    fig.set_size_inches(8, 8)
     theta_theory = np.linspace(0, np.pi, len(thetas))
-    ax.hist(thetas, bins=50, color='red', density=True, alpha=0.7)
-    ax.plot(theta_theory, 0.5 * np.sin(theta_theory), color='black')
-    ax.set_title(f'Observed θ vs. Theoretical θ (NP={simulation_object[keys.PARTICLE_COUNT]}, bins=50)')
-    ax.set_xlabel(f'θ (Spherical Coord, [0, π])')
-    ax.set_ylabel('Counts')
+    plt.hist(thetas, bins=50, color='red', density=True, alpha=0.7)
+    plt.plot(theta_theory, 0.5 * np.sin(theta_theory), color='black')
+    plt.title(f'Observed θ vs. Theoretical θ (NP={simulation_object[keys.PARTICLE_COUNT]}, bins=50)')
+    plt.xlabel(f'θ (Spherical Coord, [0, π])')
+    plt.ylabel('Counts')
+
+    plt.savefig(f'results/graphs/{simulation_object[keys.RUN_INDEX]}_{simulation_object[keys.PARTICLE_COUNT]}_theta.png')
+    plt.show()
 
     # PHIS
-    ax = axs[0][1]
+    fig = plt.figure()
+    fig.set_size_inches(8, 8)
     phi_theory = np.linspace(0, 2 * np.pi, len(phis))
-    ax.hist(phis, bins=50, color='green', density=True, alpha=0.7)
-    ax.plot(phi_theory, [1 / (2 * np.pi)] * len(phis), color='black')
-    ax.set_title(f'Observed φ vs. Theoretical φ (NP={simulation_object[keys.PARTICLE_COUNT]}, bins=50)')
-    ax.set_xlabel(f'φ (Spherical Coord, [0, 2π])')
-    ax.set_ylabel('Counts')
+    plt.hist(phis, bins=50, color='green', density=True, alpha=0.7)
+    plt.plot(phi_theory, [1 / (2 * np.pi)] * len(phis), color='black')
+    plt.title(f'Observed φ vs. Theoretical φ (NP={simulation_object[keys.PARTICLE_COUNT]}, bins=50)')
+    plt.xlabel(f'φ (Spherical Coord, [0, 2π])')
+    plt.ylabel('Counts')
+
+    plt.savefig(f'results/graphs/{simulation_object[keys.RUN_INDEX]}_{simulation_object[keys.PARTICLE_COUNT]}_phi.png')
+    plt.show()
 
     # R
-    ax = axs[1][0]
+    fig = plt.figure()
+    fig.set_size_inches(8, 8)
     r_values = np.linspace(0, np.max(np.abs(rs)), len(rs))
     expected_values = expected_pdf(r_values, D0, NT * dt)
     scaling_factor = np.trapz(expected_values, r_values)
     expected_values /= scaling_factor
-    ax.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
-    ax.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
-    ax.hist(rs, bins=50, density=True, color='blue', alpha=0.7)
-    ax.plot(r_values, expected_values, color='black')
-    ax.set_title(f'Observed r vs. Theoretical r (NP={simulation_object[keys.PARTICLE_COUNT]}, bins=50)')
-    ax.set_xlabel('r')
-    ax.set_ylabel('Counts')
+    plt.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
+    plt.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
+    plt.hist(rs, bins=50, density=True, color='blue', alpha=0.7)
+    plt.plot(r_values, expected_values, color='black')
+    plt.title(f'Observed r vs. Theoretical r (NP={simulation_object[keys.PARTICLE_COUNT]}, bins=50)')
+    plt.xlabel('r')
+    plt.ylabel('Counts')
 
-    ax = axs[1][1]
-    ax.axis('off')
-
-    plt.savefig(f'results/graphs/{simulation_object[keys.RUN_INDEX]}_{simulation_object[keys.PARTICLE_COUNT]}_verify_any_bias.png')
+    plt.savefig(f'results/graphs/{simulation_object[keys.RUN_INDEX]}_{simulation_object[keys.PARTICLE_COUNT]}_r.png')
     plt.show()
 
 def fa(aggregate_runs: list[object]):
@@ -137,7 +139,6 @@ def eigens(aggregate_runs: list):
     plt.title('Diffusion Tensor Eigen Values')
     plt.xlabel('Particle Count')
     plt.ylabel('Eigen Values')
-
 
     for runs in aggregate_runs:
         for _, v in runs.items():
