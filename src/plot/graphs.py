@@ -61,7 +61,7 @@ def verify_any_bias(simulation_object: object, D0: float, NT: int, dt: float):
         phis.append(phi)
 
     fig, axs = plt.subplots(2, 2)
-    fig.set_size_inches(12, 10)
+    fig.set_size_inches(10, 14)
     fig.set_dpi(100)
 
     # THETAS
@@ -69,8 +69,8 @@ def verify_any_bias(simulation_object: object, D0: float, NT: int, dt: float):
     theta_theory = np.linspace(0, np.pi, len(thetas))
     ax.hist(thetas, bins=50, color='red', density=True, alpha=0.7)
     ax.plot(theta_theory, 0.5 * np.sin(theta_theory), color='black')
-    ax.set_title(f'Observed θ vs. Theoretical θ (NP={simulation_object[keys.PARTICLE_COUNT]})')
-    ax.set_xlabel(f'θ (Spherical Coord, [0, π]) (bins=50)')
+    ax.set_title(f'Observed θ vs. Theoretical θ (NP={simulation_object[keys.PARTICLE_COUNT]}, bins=50)')
+    ax.set_xlabel(f'θ (Spherical Coord, [0, π])')
     ax.set_ylabel('Counts')
 
     # PHIS
@@ -78,8 +78,8 @@ def verify_any_bias(simulation_object: object, D0: float, NT: int, dt: float):
     phi_theory = np.linspace(0, 2 * np.pi, len(phis))
     ax.hist(phis, bins=50, color='green', density=True, alpha=0.7)
     ax.plot(phi_theory, [1 / (2 * np.pi)] * len(phis), color='black')
-    ax.set_title(f'Observed φ vs. Theoretical φ (NP={simulation_object[keys.PARTICLE_COUNT]})')
-    ax.set_xlabel(f'φ (Spherical Coord, [0, 2π]) (bins=50)')
+    ax.set_title(f'Observed φ vs. Theoretical φ (NP={simulation_object[keys.PARTICLE_COUNT]}, bins=50)')
+    ax.set_xlabel(f'φ (Spherical Coord, [0, 2π])')
     ax.set_ylabel('Counts')
 
     # R
@@ -92,7 +92,7 @@ def verify_any_bias(simulation_object: object, D0: float, NT: int, dt: float):
     ax.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
     ax.hist(rs, bins=50, density=True, color='blue', alpha=0.7)
     ax.plot(r_values, expected_values, color='black')
-    ax.set_title('Observed r vs. Theoretical r (NP={simulation_object[keys.PARTICLE_COUNT]}, bins=50)')
+    ax.set_title(f'Observed r vs. Theoretical r (NP={simulation_object[keys.PARTICLE_COUNT]}, bins=50)')
     ax.set_xlabel('r')
     ax.set_ylabel('Counts')
 

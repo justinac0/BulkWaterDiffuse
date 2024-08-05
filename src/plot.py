@@ -43,14 +43,21 @@ class PlotterWidget(QtWidgets.QWidget):
         for count in self.particle_counts:
             self.pcmodel.appendRow(QtGui.QStandardItem(str(count)))
 
-        self.btn_generate = QtWidgets.QPushButton('Generate All Plots')
-        self.btn_generate.clicked.connect(self.generate_plot)
+        self.btn_generate = QtWidgets.QPushButton('Specific Plots')
+        self.btn_generate.clicked.connect(self.generate_normal_plots)
+
+        self.btn_aggregate = QtWidgets.QPushButton('Aggregate Plots')
+        self.btn_aggregate.clicked.connect(self.generate_aggregate_plots)
 
         # add widgets to layout
-        self.layout = QtWidgets.QHBoxLayout(self)
-        self.layout.addWidget(self.run_index)
-        self.layout.addWidget(self.particle_count)
-        self.layout.addWidget(self.btn_generate)
+        self.content_layout = QtWidgets.QHBoxLayout(self)
+        self.button_layout = QtWidgets.QVBoxLayout(self)
+
+        self.content_layout.addWidget(self.run_index)
+        self.content_layout.addWidget(self.particle_count)
+        self.content_layout.addLayout(self.button_layout)
+        self.button_layout.addWidget(self.btn_generate)
+        self.button_layout.addWidget(self.btn_aggregate)
 
     # connect listeners
     def on_clicked_run_index(self, index):
@@ -61,11 +68,7 @@ class PlotterWidget(QtWidgets.QWidget):
         item = self.pcmodel.itemFromIndex(index)
         self.current_particle_count = int(item.text())
 
-    def generate_plot(self):
-        if self.current_run_index == None or self.current_particle_count == None:
-            print('You need to select a run index and particle counts to generate plots.')            
-            return
-
+    def generate_aggregate_plots(self):
         aggregate_runs = []
         for run in range(0, self.repeats):
             for count in self.particle_counts:
@@ -73,11 +76,19 @@ class PlotterWidget(QtWidgets.QWidget):
                 data[f'sim_{run}_{count}'] = yamlhelper.get_simulation_by_info(run, count)
                 aggregate_runs.append(data)
 
+        graph.fa(aggregate_runs)
+        graph.eigens(aggregate_runs)
+        
+
+    def generate_normal_plots(self):
+        if self.current_run_index == None or self.current_particle_count == None:
+            print('You need to select a run index and particle counts to generate plots.')            
+            return
+
         specific_run = yamlhelper.get_simulation_by_info(self.current_run_index, self.current_particle_count)
         graph.uniform_sampling(specific_run)
         graph.verify_any_bias(specific_run, self.D0, self.NT, self.dt)
-        graph.fa(aggregate_runs)
-        graph.eigens(aggregate_runs)
+
         graph.diffusion(specific_run)
         print('plots have been generated...')
 
