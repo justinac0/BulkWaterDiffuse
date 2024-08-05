@@ -36,7 +36,7 @@ def uniform_sampling(simulation_object: object):
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
 
-    plt.savefig(f'results/graphs/uniform_sampling.png')
+    plt.savefig(f'results/graphs/{simulation_object[keys.RUN_INDEX]}_{simulation_object[keys.PARTICLE_COUNT]}_uniform_sampling.png')
     plt.show()
 
 def expected_pdf(r, D, t):
@@ -69,8 +69,8 @@ def verify_any_bias(simulation_object: object, D0: float, NT: int, dt: float):
     theta_theory = np.linspace(0, np.pi, len(thetas))
     ax.hist(thetas, bins=50, color='red', density=True, alpha=0.7)
     ax.plot(theta_theory, 0.5 * np.sin(theta_theory), color='black')
-    ax.set_title('Observed θ vs. Theoretical θ')
-    ax.set_xlabel('θ (Spherical Coord, [0, π]) (bins=50)')
+    ax.set_title(f'Observed θ vs. Theoretical θ (NP={simulation_object[keys.PARTICLE_COUNT]})')
+    ax.set_xlabel(f'θ (Spherical Coord, [0, π]) (bins=50)')
     ax.set_ylabel('Counts')
 
     # PHIS
@@ -78,8 +78,8 @@ def verify_any_bias(simulation_object: object, D0: float, NT: int, dt: float):
     phi_theory = np.linspace(0, 2 * np.pi, len(phis))
     ax.hist(phis, bins=50, color='green', density=True, alpha=0.7)
     ax.plot(phi_theory, [1 / (2 * np.pi)] * len(phis), color='black')
-    ax.set_title('Observed φ vs. Theoretical φ')
-    ax.set_xlabel('φ (Spherical Coord, [0, 2π]) (bins=50)')
+    ax.set_title(f'Observed φ vs. Theoretical φ (NP={simulation_object[keys.PARTICLE_COUNT]})')
+    ax.set_xlabel(f'φ (Spherical Coord, [0, 2π]) (bins=50)')
     ax.set_ylabel('Counts')
 
     # R
@@ -92,17 +92,17 @@ def verify_any_bias(simulation_object: object, D0: float, NT: int, dt: float):
     ax.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
     ax.hist(rs, bins=50, density=True, color='blue', alpha=0.7)
     ax.plot(r_values, expected_values, color='black')
-    ax.set_title('Observed r vs. Theoretical r (bins=50)')
+    ax.set_title('Observed r vs. Theoretical r (NP={simulation_object[keys.PARTICLE_COUNT]}, bins=50)')
     ax.set_xlabel('r')
     ax.set_ylabel('Counts')
 
     ax = axs[1][1]
     ax.axis('off')
 
-    plt.savefig(f'results/graphs/verify_any_bias.png')
+    plt.savefig(f'results/graphs/{simulation_object[keys.RUN_INDEX]}_{simulation_object[keys.PARTICLE_COUNT]}_verify_any_bias.png')
     plt.show()
 
-def fa(simulation_object: object):
+def fa(aggregate_runs: list[object]):
     fig = plt.figure()
     fig.set_size_inches(8, 8)
     plt.title('Fractional Anisotropy (FA)')
@@ -112,38 +112,40 @@ def fa(simulation_object: object):
     xs = np.array([])
     ys = np.array([])
 
-    for counts in simulation_object[keys.PARTICLE_COUNT]:
-        sim = simulation_object[f'sim_0_{counts}']
-        FA = sim[keys.FRACTIONAL_ANISOTROPY]
-        NP = sim[keys.PARTICLE_COUNT]
+    for runs in aggregate_runs:
+        for _, v in runs.items():
+            FA = v[keys.FRACTIONAL_ANISOTROPY]
+            NP = v[keys.PARTICLE_COUNT]
 
-        x = 1/math.sqrt(NP)
-        y = FA
+            x = 1/math.sqrt(NP)
+            y = FA
 
-        xs = np.append(xs, x)
-        ys = np.append(ys, y)
+            xs = np.append(xs, x)
+            ys = np.append(ys, y)
 
     plt.scatter(xs, ys, s=3, c='blue')
 
     a, b = np.polyfit(xs, ys, 1)
     plt.plot(xs, a * xs + b, c='black')
 
-    plt.savefig(f'results/graphs/fa.png')
+    plt.savefig(f'results/graphs/fa_combined.png')
     plt.show()
 
-def eigens(simulation_object: object):
+def eigens(aggregate_runs: list):
     fig = plt.figure()
     fig.set_size_inches(8, 8)
     plt.title('Diffusion Tensor Eigen Values')
     plt.xlabel('Particle Count')
     plt.ylabel('Eigen Values')
 
-    for count in simulation_object[keys.PARTICLE_COUNT]:
-        D11 = simulation_object[f'sim_0_{count}'][keys.DIFFUSION_TENSOR]['D11']
-        D22 = simulation_object[f'sim_0_{count}'][keys.DIFFUSION_TENSOR]['D22']
-        D33 = simulation_object[f'sim_0_{count}'][keys.DIFFUSION_TENSOR]['D33']
 
-        plt.scatter([count] * 3, [D11, D22, D33], c='blue')
+    for runs in aggregate_runs:
+        for _, v in runs.items():
+            D11 = v[keys.DIFFUSION_TENSOR]['D11']
+            D22 = v[keys.DIFFUSION_TENSOR]['D22']
+            D33 = v[keys.DIFFUSION_TENSOR]['D33']
+
+            plt.scatter([v[keys.PARTICLE_COUNT]] * 3, [D11, D22, D33], c='blue')
 
     plt.savefig(f'results/graphs/eigens.png')
     plt.show()
@@ -170,11 +172,11 @@ def diffusion(simulation_object: object):
         ys.append(y)
         zs.append(z)
 
-    ax.set_title('Diffusion of Bulk Water')
+    ax.set_title(f'Diffusion of Bulk Water (NP={simulation_object[keys.PARTICLE_COUNT]})')
     ax.scatter(xs, ys, zs, color='blue', s=1)
     ax.set_xlabel('X (mm)')
     ax.set_ylabel('Y (mm)')
     ax.set_zlabel('Z (mm)')
 
-    plt.savefig(f'results/graphs/diffuse.png')
+    plt.savefig(f'results/graphs/{simulation_object[keys.RUN_INDEX]}_{simulation_object[keys.PARTICLE_COUNT]}_diffuse.png')
     plt.show()
