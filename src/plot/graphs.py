@@ -20,7 +20,7 @@ def uniform_sampling(simulation_object: object):
     ys = []
     zs = []
 
-    for p in simulation_object[keys.PARTICLE_LIST][:1000]:
+    for p in simulation_object[keys.PARTICLE_LIST]:#[:1000]:
         x = p['x']
         y = p['y']
         z = p['z']

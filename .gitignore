@@ -162,5 +162,5 @@ cython_debug/
 #.idea/
 
 environment/
-*.png
-*.yaml
+results/graphs/*.png
+results/data/*.yaml
