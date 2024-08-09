@@ -1,7 +1,7 @@
 import simulation.math as smath
 from simulation.collagen import CollagenNetwork
 
-network = CollagenNetwork(0.025, 0.3)
+network = CollagenNetwork(60*10**(-9), 0.5 * 10**(-6))
 
 class Particle:
     def __init__(self, position: tuple):

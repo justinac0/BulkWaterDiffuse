@@ -5,12 +5,12 @@ import simulation.math as smath
 import simulation.parallel.functions as parallel
 
 if __name__ == '__main__':
-    NT = 300          # steps
-    D0 = 1 # diffusion coefficient
-    dt = 10**(-4)   # time step
-    repeats = 1       # how many times each NP simulation will be run
+    NT = 500         # steps
+    D0 = 2*10**(-9)  # diffusion coefficient
+    dt = 2*10**(-12) # time step
+    repeats = 3      # how many times each NP simulation will be run
 
-    NP = smath.equidistant_np_space(10000, 10000, 1)
+    NP = smath.equidistant_np_space(10, 30000, 250)
     elapsed_time, simulations = parallel.simulate_on_multiple_cores(NT, NP, D0, dt, repeats)
     yamlhelper.write_simulations_files(NT, D0, dt, simulations, repeats, elapsed_time)
-    # playsound('resources/audio/water_drop_reverb.mp3')
+    playsound('resources/audio/water_drop_reverb.mp3')
