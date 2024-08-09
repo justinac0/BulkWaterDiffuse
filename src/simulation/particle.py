@@ -1,4 +1,7 @@
 import simulation.math as smath
+from simulation.collagen import CollagenNetwork
+
+network = CollagenNetwork(0.025, 0.3)
 
 class Particle:
     def __init__(self, position: tuple):
@@ -10,6 +13,13 @@ class Particle:
         x, y, z = smath.calculate_displacement(D, dt, rw_direction)
 
         px, py, pz = self.position
+        nx = px + x
+        ny = py + y
+        nz = pz + z
+
+        if smath.is_point_in_collagen_network(nx, ny, nz, network):
+            return
+        
         self.position = (px + x, py + y, pz + z)
 
     # x, y, z

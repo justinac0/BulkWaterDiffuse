@@ -1,4 +1,6 @@
 import numpy as np
+from simulation.particle import Particle
+from simulation.collagen import CollagenNetwork
 
 def cartesian_to_spherical(point: tuple) -> tuple:
     dx, dy, dz = point
@@ -86,3 +88,23 @@ def equidistant_np_space(min, max, N):
 
     # transform back to N space
     return np.power(space, -2).astype(int)
+
+def is_point_in_collagen_network(x, y, z, network: CollagenNetwork) -> bool:
+    Rx = x / network.L - 0.5
+    Ry = y / network.L - 0.5
+
+    Cx = np.floor(Rx)
+    dx = Rx - Cx
+    if dx > 0.5:
+        Cx = np.ceil(Rx)
+
+    Cy = np.floor(Ry)
+    dy = Ry - Cy
+    if dy > 0.5:
+        Cy = np.ceil(Ry)
+
+    dist = np.sqrt((Rx - Cx)**2 + (Ry - Cy)**2)
+    tr = (network.r) / network.L
+
+    return dist < tr
+
