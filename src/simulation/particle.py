@@ -1,26 +1,26 @@
 import simulation.math as smath
 from simulation.collagen import CollagenNetwork
 
-network = CollagenNetwork(60*10**(-9), 0.5 * 10**(-6))
+network = CollagenNetwork(0.3, 1)
 
 class Particle:
     def __init__(self, position: tuple):
         self.position = position
 
     # random walk in unbiased direction
-    def walk(self, D, dt):
+    def walk(self, D0: float, dt: float):
         rw_direction = smath.projected_surface_spherical_point()
-        x, y, z = smath.calculate_displacement(D, dt, rw_direction)
+        x, y, z = smath.calculate_displacement(D0, dt, rw_direction)
 
         px, py, pz = self.position
         nx = px + x
         ny = py + y
         nz = pz + z
 
-        if smath.is_point_in_collagen_network(nx, ny, nz, network):
-            return
-        
-        self.position = (px + x, py + y, pz + z)
+        if smath.is_point_in_collagen_network(nx, ny, network):
+           return 
+
+        self.position = (nx, ny, nz)
 
     # x, y, z
     def get_cartesian_position(self):

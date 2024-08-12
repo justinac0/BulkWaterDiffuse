@@ -89,10 +89,12 @@ def equidistant_np_space(min, max, N):
     # transform back to N space
     return np.power(space, -2).astype(int)
 
-def is_point_in_collagen_network(x, y, z, network: CollagenNetwork) -> bool:
+def is_point_in_collagen_network(x, y, network: CollagenNetwork) -> bool:
+    # Relative x-y positions of collagen fiber centers (offset from center)
     Rx = x / network.L - 0.5
     Ry = y / network.L - 0.5
 
+    # Integer fiber positions (Cx, Cy) -> (col, row)
     Cx = np.floor(Rx)
     dx = Rx - Cx
     if dx > 0.5:
@@ -103,7 +105,10 @@ def is_point_in_collagen_network(x, y, z, network: CollagenNetwork) -> bool:
     if dy > 0.5:
         Cy = np.ceil(Ry)
 
+    # Distance to center of collagen fiber
     dist = np.sqrt((Rx - Cx)**2 + (Ry - Cy)**2)
+
+    # Relative collagen fiber radius
     tr = (network.r) / network.L
 
     return dist < tr

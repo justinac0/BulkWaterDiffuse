@@ -153,12 +153,12 @@ def eigens(aggregate_runs: list):
 
 def diffusion(simulation_object: object):
     fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
+    ax = fig.add_subplot()
     ax.set_aspect('equal', 'box')
 
     ax.ticklabel_format(style='sci', axis='x', scilimits=(-3, 3), useMathText=True)
     ax.ticklabel_format(style='sci', axis='y', scilimits=(-3, 3), useMathText=True)
-    ax.ticklabel_format(style='sci', axis='z', scilimits=(-3, 3), useMathText=True)
+    # ax.ticklabel_format(style='sci', axis='z', scilimits=(-3, 3), useMathText=True)
 
     xs = []
     ys = []
@@ -167,17 +167,17 @@ def diffusion(simulation_object: object):
     for p in simulation_object[keys.PARTICLE_LIST]:
         x = p['x']
         y = p['y']
-        z = p['z']
+        # z = p['z']
 
         xs.append(x)
         ys.append(y)
-        zs.append(z)
+        # zs.append(z)
 
     ax.set_title(f'Diffusion of Bulk Water (NP={simulation_object[keys.PARTICLE_COUNT]})')
-    ax.scatter(xs, ys, zs, color='blue', s=1)
-    ax.set_xlabel('X (mm)')
-    ax.set_ylabel('Y (mm)')
-    ax.set_zlabel('Z (mm)')
+    ax.scatter(xs, ys, color='red', s=0.5)
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    # ax.set_zlabel('Z')
 
     plt.savefig(f'results/graphs/{simulation_object[keys.RUN_INDEX]}_{simulation_object[keys.PARTICLE_COUNT]}_diffuse.png')
     plt.show()
