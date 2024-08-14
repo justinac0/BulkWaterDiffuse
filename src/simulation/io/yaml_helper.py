@@ -43,13 +43,9 @@ def read_yaml_to_object(file_path: str) -> object:
 
     return data
 
-def get_all_simulations() -> list[object]:
-    
-    return None
-
-def get_simulation_by_info(run: int, NP: int) -> object:
+def get_simulation_by_info(run: int, NP: int, directory: str) -> object:
     file_name = f'sim_{run}_{NP}'
-    data = read_yaml_to_object(f'results/data/{file_name}.yaml')[f'sim_{run}_{NP}']
+    data = read_yaml_to_object(f'{directory}/{file_name}.yaml')[f'sim_{run}_{NP}']
     if data == None:
         return data
 

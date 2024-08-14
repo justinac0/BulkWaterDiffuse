@@ -1,5 +1,7 @@
 import sys
 from PySide6 import QtCore, QtWidgets, QtGui
+from PySide6.QtWidgets import QFileDialog
+
 import matplotlib.pyplot as plt
 import simulation.io.yaml_helper as yamlhelper
 import simulation.io.yaml_keys as keys
@@ -9,7 +11,10 @@ class PlotterWidget(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
 
-        self.simulation_info = yamlhelper.read_yaml_to_object('results/data/info.yaml')
+        dialog = QFileDialog()
+        self.dir_selection = dialog.getExistingDirectory(self, 'SELECT DIRECTORY WITH SIMULATION DATA (contains info.yaml)')
+
+        self.simulation_info = yamlhelper.read_yaml_to_object(f'{self.dir_selection}/info.yaml')
         self.D0 = self.simulation_info[keys.DIFFUSION_COEF]
         self.NT = self.simulation_info[keys.STEP_COUNT]
         self.dt = self.simulation_info[keys.TIME_STEP]
@@ -73,7 +78,7 @@ class PlotterWidget(QtWidgets.QWidget):
         for run in range(0, self.repeats):
             for count in self.particle_counts:
                 data = {}
-                data[f'sim_{run}_{count}'] = yamlhelper.get_simulation_by_info(run, count)
+                data[f'sim_{run}_{count}'] = yamlhelper.get_simulation_by_info(run, count, self.dir_selection)
                 aggregate_runs.append(data)
 
         graph.fa(aggregate_runs)
@@ -85,7 +90,7 @@ class PlotterWidget(QtWidgets.QWidget):
             print('You need to select a run index and particle counts to generate plots.')            
             return
 
-        specific_run = yamlhelper.get_simulation_by_info(self.current_run_index, self.current_particle_count)
+        specific_run = yamlhelper.get_simulation_by_info(self.current_run_index, self.current_particle_count, self.dir_selection)
         graph.uniform_sampling(specific_run)
         graph.verify_any_bias(specific_run, self.D0, self.NT, self.dt)
 

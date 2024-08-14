@@ -17,6 +17,7 @@ class Particle:
         ny = py + y
         nz = pz + z
 
+        # simulate the collagen network
         if smath.is_point_in_collagen_network(nx, ny, network):
            return 
 

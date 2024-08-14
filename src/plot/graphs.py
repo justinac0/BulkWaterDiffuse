@@ -137,7 +137,7 @@ def eigens(aggregate_runs: list):
     fig = plt.figure()
     fig.set_size_inches(8, 8)
     plt.title('Diffusion Tensor Eigen Values')
-    plt.xlabel('Particle Count')
+    plt.xlabel('NP')
     plt.ylabel('Eigen Values')
 
     for runs in aggregate_runs:
@@ -173,10 +173,10 @@ def diffusion(simulation_object: object):
         ys.append(y)
         # zs.append(z)
 
-    ax.set_title(f'Diffusion of Bulk Water (NP={simulation_object[keys.PARTICLE_COUNT]})')
-    ax.scatter(xs, ys, color='red', s=0.5)
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
+    ax.set_title(f'Bulk Water Diffusion (NP={simulation_object[keys.PARTICLE_COUNT]}, 1 unit = 200nm)')
+    ax.scatter(xs, ys, color='blue', s=0.5)
+    ax.set_xlabel('X (unit^2)')
+    ax.set_ylabel('Y (unit^2)')
     # ax.set_zlabel('Z')
 
     plt.savefig(f'results/graphs/{simulation_object[keys.RUN_INDEX]}_{simulation_object[keys.PARTICLE_COUNT]}_diffuse.png')
