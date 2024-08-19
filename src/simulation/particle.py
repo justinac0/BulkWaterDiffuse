@@ -1,7 +1,8 @@
 import simulation.math as smath
 from simulation.collagen import CollagenNetwork
+import initial_conditions as ic
 
-network = CollagenNetwork(0.3, 1)
+network = CollagenNetwork(ic.r, ic.L)
 
 class Particle:
     def __init__(self, position: tuple):

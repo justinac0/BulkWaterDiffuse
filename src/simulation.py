@@ -1,16 +1,13 @@
 from playsound3 import playsound
 
-import simulation.io.yaml_helper as yamlhelper
 import simulation.math as smath
+import simulation.io.yaml_helper as yamlhelper
 import simulation.parallel.functions as parallel
+import initial_conditions as ic
 
 if __name__ == '__main__':
-    NT = 500            # steps
-    D0 = 3.75*10**4     # diffusion coefficient
-    dt = 2.67*10**(-8)  # time step
-    repeats = 3         # how many times each NP simulation will be run
-
-    NP = smath.equidistant_np_space(100, 100000, 250)
-    elapsed_time, simulations = parallel.simulate_on_multiple_cores(NT, NP, D0, dt, repeats)
-    yamlhelper.write_simulations_files(NT, D0, dt, simulations, repeats, elapsed_time)
+    NP = smath.equidistant_np_space(ic.min_particles, ic.max_particles, ic.iterations)
+    elapsed_time, simulations = parallel.simulate_on_multiple_cores(ic.NT, NP, ic.D0, ic.dt, ic.repeats)
+    yamlhelper.write_simulations_files(ic.NT, ic.D0, ic.dt, simulations, ic.repeats, elapsed_time)
     playsound('resources/audio/water_drop_reverb.mp3')
+
